@@ -71,9 +71,6 @@ View(tail(df_2015_to_2017))
 colSums(is.na(df_2015_to_2017)) # Check if there are any missing values in the data frame
 colSums(!is.na(df_2015_to_2017)) # Check if there are any missing values in the data frame
 
-
-
-
 # ---- Data set 2: df_2015_to_2017
 df_2018$trip_id[is.na(df_2018$trip_id)] <- 
   df_2018$X01...Rental.Details.Rental.ID[is.na(df_2018$trip_id)]

@@ -230,10 +230,6 @@ df_2016 <- rename(df_2016,
 
 ```
 
-```{r}
-head(filter(df_2019, is.na(start_time)))
-```
-
 
 ```{r}
 str(df_2016)

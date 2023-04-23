@@ -480,6 +480,7 @@ file_name = file.path('outputs', 'img', 'bar_plots__number_of_ride_per_customer_
 ggsave(file_name,
        width=16,
        height=8)
+
 ```
 Comment: Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
 

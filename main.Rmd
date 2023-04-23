@@ -36,6 +36,7 @@ The objective is to analyze and compare the usage habits of annual members and c
 #### Get all the datasets
 
 
+
 ### 3. Documentation of any cleaning or manipulation of data
 ### 4. A summary of your analysis
 ### 5. Supporting visualizations and key findings

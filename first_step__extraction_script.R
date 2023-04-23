@@ -122,7 +122,6 @@ list_Divvy_Trips_zip <- get_links_with_keywords(url = url,
                                                 keywords = keywords1)
 
 #
-
 # Data 1:--------------------- 2015 to 2017
 for (year in 2015:2020){
   years_range = c(year)

@@ -5,7 +5,7 @@ date: "2023-04-21"
 output: html_document
 ---
 
-```{r install packages}
+```{r install packages, include=FALSE}
 install.packages("tidyverse")
 install.packages("lubridate") # Manipulate date attributes
 install.packages("httr")

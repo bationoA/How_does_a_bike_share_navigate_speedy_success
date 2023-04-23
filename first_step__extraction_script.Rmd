@@ -17,6 +17,21 @@ library("tidyverse")
 library(httr)
 ```
 
+# Create required folders
+```{r}
+list_folders <- c("data", "downloaded_zip", "outputs", file.path("outputs", "data"), file.path("outputs", "img"))
+
+for (folder_path_name in list_folders){
+  # Check if the folder exists
+  if (!file.exists(folder_path_name)) {
+    # Create the file
+    dir.create(folder_path_name)
+    }
+}
+print("Required folders was created!")
+```
+
+
 # Extraction functions
 ```{r Extraction functions}
 get_links_with_keywords <- function(url, keywords, all_keywords=TRUE){

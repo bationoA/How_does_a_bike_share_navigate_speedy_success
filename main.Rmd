@@ -7,22 +7,19 @@ output:
   pdf_document: default
 ---
 
-# Case Study 1: How does a bike-share navigate speedy success?
+# Case Study: How does a bike-share navigate speedy success?
+In this case study we will work for a fictional company, Cyclistic, a bike-share company in Chicago. For the director of marketing of the company’s, future success depends on maximizing the number of annual memberships. Therefore, rather than creating a marketing campaign that targets all-new customers, the director of marketing believes there is a
+very good chance to convert casual riders into members. 
+
 Source: [Link](https://d3c33hcgiwev3.cloudfront.net/aacF81H_TsWnBfNR_x7FIg_36299b28fa0c4a5aba836111daad12f1_DAC8-Case-Study-1.pdf?Expires=1681084800&Signature=WgKO~-LpPUMKTGb95H3tFbjTpbRvtu1nqBpjLACnTFrK6jBlggPYFa4lDd6jERYrYmrs7kP~4W~AJU4a3TgXhrp8XFq2c5L5gXwSIcBZNrDDKEeT1ZPXQzSUUGbFtvzy5iz-TyEvMJ-2ETjsA-oDex859GY-Ztjr8EitozVmK2w_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A)
 
-
-Loading packages
-
-```{r loading packages}
-library("tidyverse")
-```
-
-## Ask
-Three questions will guide the future marketing program:
+In order to help the company design a new marketing strategy to convert casual riders into annual members, some questions need to be answered
 
 * 1. How do annual members and casual riders use Cyclistic bikes differently?
 * 2. Why would casual riders buy Cyclistic annual memberships?
 * 3. How can Cyclistic use digital media to influence casual riders to become members?
+
+This case study will focus on the first question.
 
 ## How do annual members and casual riders use Cyclistic bikes differently?
 
@@ -31,14 +28,42 @@ The objective is to analyze and compare the usage habits of annual members and c
 
 
 ### 2. A description of all data sources used
+The data used in this study are Cyclistic’s historical trip data. The initial case study suggests to get only the previous 12 months trips data but we will consider all data (from January 2015 to March 2023). This could give more insights regarding changes over years.
+
+There are several csv files containing trips data ([seen list sata sets here](https://divvy-tripdata.s3.amazonaws.com/index.html)). The name of variables are not consistent across all data sets but they contain similar information. The information that can be found in these data sets are:
+
+* trip_id: ID attached to each trip taken
+* start_time: day and time trip started, in CST
+* stop_time: day and time trip ended, in CST
+* bikeid: ID attached to each bike
+* tripduration: time of trip in seconds 
+* from_station_name: name of station where trip originated
+* to_station_name: name of station where trip terminated 
+* from_station_id: ID of station where trip originated
+* to_station_id: ID of station where trip terminated
+* usertype: "Customer" is a rider who purchased a 24-Hour Pass; "Subscriber" is a rider who purchased an Annual Membership
+* gender: gender of rider 
+
+This project contains different files with different purpose:
+
+* [first_step__extraction_script](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/first_step__extraction_script.Rmd): Contains scripts to download all data sets, extract and combine relevant csv files. The extractions scripts can easily be modify to download only data sets based on years. The scripts in this file should be the first to be ran
+* [second_step__Formating](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/second_step__Formating.Rmd): To be ran at the after first_step__extraction_script, it contains scripts to consolidate the format of data sets (date-time), rename columns or combine all data sets into only 2
+* [third_step__Cleaning](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/third_step__Cleaning.Rmd): This contains scripts for cleaning the previous 2 data sets and combine them into one. 
+* [herefourth_step__analysis](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/fourth_step__analysis.Rmd): This file contains scripts for all the analysis related to to case study
 
 
-#### Get all the datasets
-
-
-
-### 3. Documentation of any cleaning or manipulation of data
 ### 4. A summary of your analysis
+
 ### 5. Supporting visualizations and key findings
 ### 6. Your top three recommendations based on your analysis
+
+### Act
+Guiding questions
+#### What is your final conclusion based on your analysis?
+#### How could your team and business apply your insights?
+#### What next steps would you or your stakeholders take based on your findings?
+#### Is there additional data you could use to expand on your findings?
+
+
+
 

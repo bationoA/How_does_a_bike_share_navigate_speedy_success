@@ -1,0 +1,789 @@
+---
+title: "fourth_step__analysis"
+author: "Amos Bationo"
+date: "2023-04-19"
+output: html_document
+---
+
+Loading packages
+
+```{r loading packages, echo=FALSE}
+library("tidyverse")
+library("ggplot2")
+library("lawstat")  # to perform a Levene's test for homogeneity of variances using the 'leveneTest' 
+```
+
+# -------------- Descriptive analysis
+#______________________________________________________________________________#
+### ---- Data sets
+```{r Data sets, echo=FALSE}
+df <- read_csv(file.path('data', 'df_2015_to_2023.csv'))
+```
+
+```{r}
+dim(df)
+```
+
+```{r}
+str(df)
+```
+### What are the attributes to consider for this task?
+Number of ride
+rideable_type
+ride_length
+member_casual
+month
+day
+year
+day_of_week
+
+#### Transform month from integers to name
+```{r}
+df <- 
+  df %>%
+  mutate(month = month.abb[as.integer(month)])
+print("Done.")
+```
+
+```{r}
+head(df)
+```
+
+
+
+#### days of the week and months must be ordered
+```{r}
+df$day_of_week <- ordered(df$day_of_week, 
+                          levels=c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+
+df$month <- ordered(df$month, 
+                          levels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+print("Done.")
+```
+
+```{r}
+unique(df$month)
+```
+
+
+
+# Descriptive analysis on ride_length (all figures in seconds)
+```{r}
+mean(df$ride_length) #straight average (total ride length / rides)
+median(df$ride_length) #midpoint number in the ascending array of ride lengths
+max(df$ride_length) #longest ride
+min(df$ride_length) #shortest ride
+```
+Note: 'ride_length' expresses the duration of a ride in seconds. This is a 
+fictional data and at least one ride has a duration of 1 second which is too 
+short duration in a real life scenario. 
+
+Let's remove all ride with a 'ride_length' less than 5 minutes and convert it 
+to minutes
+
+```{r}
+df <- filter(df, ride_length >= 5*60) %>% 
+  mutate(ride_length = round(ride_length / 60)) 
+print("Done.")
+```
+
+```{r}
+general_description_cols <- c('ride_length')
+summary(df[general_description_cols])
+```
+
+Comment: Our dataset's descriptive statistics for 'ride_length' revealed a few interesting findings. The most brief trip lasted 5 minutes, while the longest ride lasted an incredible 238,940 minutes, which is almost 166 days! The average length of all rides was discovered to be 23.55 minutes. The median ride duration of 14 minutes, on the other hand, is a better representation of a typical ride length since it is closer to the majority of the values than the mean. The first quartile of ride lengths was 9 minutes, suggesting that 25% of the rides were completed in that amount of time. The third quartile stood at 23 minutes, which means that 75% of the trips were that long or less.
+
+In summary, these statistics indicate that our dataset has a wide variety of ride lengths, with some being quite short and others being exceedingly long, with most rides lasting between 9 and 23 minutes. These information might help uncover trends and patterns in ride length, which could help drive decision-making in areas like route design and pricing strategies.
+
+#### Categorize ride length
+```{r}
+ride_len_level <- c('5-10min', '10-30min', '30min-1h', '1-2h', '2-5h', '5h-1d', '1-2d', '2d-1w', '1w-1m', '1-3m', '3m+')
+
+df <- mutate(df, 
+             ride_length_cat = ifelse(ride_length <= 10, ride_len_level[1], # '5-10min', 
+                                      ifelse(ride_length <= 30, ride_len_level[2], # '10-30min', 
+                                             ifelse(ride_length <= 60, ride_len_level[3], # '30min-1h',
+                                                    ifelse(ride_length <= 2*60, ride_len_level[4], # '1-2h', 
+                                                           ifelse(ride_length <= 5*60, ride_len_level[5], # '2-5h', 
+                                                                  ifelse(ride_length <= 24*60, ride_len_level[6], # '5h-1d', 
+                                                                         ifelse(ride_length <= 2*24*60, ride_len_level[7], # '1-2d',
+                                                                                ifelse(ride_length <= 7*24*60, ride_len_level[8], # '2d-1w',
+                                                                                       ifelse(ride_length <= 4*7*24*60, ride_len_level[9], # '1w-1m', 
+                                                                                              ifelse(ride_length <= 3*4*7*24*60, ride_len_level[10], ride_len_level[11] # '1-3m', '3m+'
+                                                                                                     )
+                                                                                              )
+                                                                                       )
+                                                                                )
+                                                                         )
+                                                                  )
+                                                           )
+                                                    )
+                                             )
+                                      )
+)
+length(ride_len_level)
+df$ride_length_cat <- ordered(df$ride_length_cat,
+                              levels=ride_len_level)
+print("Done.")
+```
+
+
+```{r}
+head(df)
+```
+
+```{r}
+df %>% 
+  group_by(ride_length_cat) %>% 
+  summarise(number_of_rides = n())
+```
+
+Checking for missing values in 'ride_length_cat'
+```{r}
+filter(df, is.na(ride_length_cat))[c('ride_length', 'ride_length_cat')]
+```
+# Basics stats of ride_length: Compare members and casual users
+```{r}
+df_to_export <-
+  df %>% 
+  group_by(member_casual) %>% 
+  summarise(avg_ride_length = mean(ride_length),
+            median_ride_length = median(ride_length),
+            min_ride_length = min(ride_length),
+            max_ride_length = max(ride_length)
+            )
+df_to_export
+# export
+df_to_export_name = "basics_stats_of_ride_length__Compare_members_and_casual_users.csv"
+# write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
+print("Data exported.")
+```
+Comment: The descriptive statistics for ride lengths in our dataset are presented in the table above, broken down by membership type: casual and member. The average ride time for casual riders was 40.03 minutes, which is more than double the average ride length for members, which was 15.35 minutes. However, it's worth noting that the average ride time for casual riders was just 21 minutes, while it was 11 minutes for members. This implies that, while the dataset contains some very lengthy casual rides, the vast majority of trips are far shorter. 
+The longest ride length for casual bikers was 238,940 minutes, which is more than 165 days! The longest ride length for members was 225,960 minutes, which is also a very long time. The minimum riding time for both groups was 5 minutes, indicating that some rides may have been cut short for various reasons. Overall, these statistics indicate that our dataset has a wide variety of ride lengths, with some being quite short and others being exceedingly long. These information might help uncover trends and patterns in ride length, which could help drive decision-making in areas like route design and pricing strategies.
+
+### Visualize: Compare casual vs member' ride_length in Boxplots
+
+```{r}
+# Calculate quartiles and interquartile range
+q1 <- quantile(df$ride_length, 0.25)
+q3 <- quantile(df$ride_length, 0.75)
+iqr <- q3 - q1
+
+# Calculate upper and lower bounds for outliers
+upper_bound <- q3 + 1.5*iqr
+lower_bound <- q1 - 1.5*iqr
+
+# Filter out outliers before ploting
+df %>% filter(ride_length >= lower_bound & ride_length <= upper_bound) %>% 
+  ggplot(aes(x = member_casual, y = ride_length, fill = member_casual)) + 
+  geom_boxplot() + 
+  xlab("Subscription Type") + ylab("Ride Duration (in minutes)") + 
+  labs(fill = "Customers", caption = "") + 
+  labs(fill = "Customers", 
+       title = "Ride Duration by Customer Type (Casual vs. Member)",
+       subtitle = "Jan 2015 to Mar 2023 (outliers were removed based on quantiles)",
+       caption = "Casual customers' trips tend to last much longer than those of annual subscribers.",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = 16),
+        plot.subtitle = element_text(hjust = 0, size = 10),
+        plot.caption = element_text(hjust = 0, size = 10))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'box_plots__ride_duration_by_customer_type.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       width=16,
+       height=8)
+```
+Comment: After removing the outliers it appears that 'member' subscription type of customers tend to use the bikes for shorter trips compared to the 'casual' customers. Let's assess the strength of this hypothesis throught a statistical test.
+
+## T-Test for comparing the average duraction trip of the to types of customes (casual and member)
+The assumptions of the two-sample t-test are:
+
+    Normality: The data should be approximately normally distributed within each group.
+    Independence: The observations within each group should be independent.
+    Homogeneity of variance: The variance of the data should be equal in both groups.
+    Random sampling: The samples should be randomly selected from their respective populations.
+    
+#### Test for homogeneity of variance
+```{r}
+# For this test we choose alpha = 0.05
+# H0: The variance of the two groups ('casual' and 'member') in terms of trips duration are similar 
+
+# Calculate quartiles and interquartile range
+q1 <- quantile(df$ride_length, 0.25)
+q3 <- quantile(df$ride_length, 0.75)
+iqr <- q3 - q1
+
+# Calculate upper and lower bounds for outliers
+upper_bound <- q3 + 1.5*iqr
+lower_bound <- q1 - 1.5*iqr
+
+# Filter out outliers before testing
+levene.test(y = filter(df, ride_length >= lower_bound & ride_length <= upper_bound)$ride_length, 
+            group = filter(df, ride_length >= lower_bound & ride_length <= upper_bound)$member_casual, 
+            location = "median")  # Perform Levene's test
+```
+Result: p-value < 2.2e-16 < alpha = 0.05
+Comment: We reject the null hypothesis (H0) of Homogeneity of variance of the duration of rides between the 'casual' and 'member' customers.
+#### Test for normal distribution
+```{r}
+# For this test we choose alpha = 0.05
+# H0: The data are normally distributed 
+
+# ----- casual
+# Calculate quartiles and interquartile range
+q1_casual <- quantile(filter(df, member_casual == 'casual')$ride_length, 0.25)
+q3_casual <- quantile(filter(df, member_casual == 'casual')$ride_length, 0.75)
+iqr_casual <- q3_casual - q1_casual
+
+# Calculate upper and lower bounds for outliers
+upper_bound_casual <- q3_casual + 1.5*iqr_casual
+lower_bound_casual <- q1_casual - 1.5*iqr_casual
+
+#----- member
+# Calculate quartiles and interquartile range
+q1_member <- quantile(filter(df, member_casual == 'casual')$ride_length, 0.25)
+q3_member <- quantile(filter(df, member_casual == 'casual')$ride_length, 0.75)
+iqr_member <- q3_member - q1_member
+
+# Calculate upper and lower bounds for outliers
+upper_bound_member <- q3_member + 1.5*iqr_member
+lower_bound_member <- q1_member - 1.5*iqr_member
+
+# Note: The maximum sample size for a shipiro test here is 5000
+# Normality test for 'casual' group
+shapiro.test(sample(filter(df, member_casual == "casual", ride_length >= lower_bound_casual & ride_length <= upper_bound_casual)$ride_length, size = 5000))
+
+# Normality test for 'member' group
+shapiro.test(sample(filter(df, member_casual == "member", ride_length >= lower_bound_member & ride_length <= upper_bound_member)$ride_length, size=5000))
+```
+Result: p-value < 2.2e-16 < alpha = 0.05 for both 'casual' and 'member'
+Comment: For both 'casual' and 'member', the values of rides duration are not normally distributed
+Many assumptions of a T-Test are violated. If we still decide to proceed with the The T-test, these violations should be mentioned.
+
+Running the T-Test anyway
+```{r}
+# For this test we choose alpha = 0.05
+# H0: averages trips duration for 'casual' and 'member' customers are statistically equal
+
+t.test(filter(df, member_casual == "casual", ride_length >= lower_bound_casual & ride_length <= upper_bound_casual)$ride_length,
+       filter(df, member_casual == "member", ride_length >= lower_bound_member & ride_length <= upper_bound_member)$ride_length)
+```
+Result: p-value < 2.2e-16 < alpha = 0.05
+Comment: We reject the null hypothesis and conclude that the difference in the average duration of the trips between 'casual' and 'member' customers is  statistically significant. However, it should be noted that the assumptions for the T-Test was violated.
+
+#### Switch to a non parametric test compare the distribution of the 2 types of customers (No assumptions on the distribution)
+```{r}
+# Wilcoxon rank-sum test: Also known as the Mann-Whitney U test, it compares the medians of two independent groups
+
+# For this test we choose alpha = 0.05
+# H0: median value of  trips duration for 'casual' and 'member' customers are statistically equal
+
+# perform the Wilcoxon rank-sum test
+wilcox.test(
+  filter(df, member_casual == "casual", ride_length >= lower_bound_casual & ride_length <= upper_bound_casual)$ride_length,
+  filter(df, member_casual == "member", ride_length >= lower_bound_member & ride_length <= upper_bound_member)$ride_length)
+```
+Result: p-value < 2.2e-16 < alpha = 0.05
+Comment: We reject the null hypothesis and conclude that the difference in the duration of the trips between 'casual' and 'member' customers is  statistically significant.
+
+# See ridership data by type (members vs casual users) and week day
+
+```{r}
+df_to_export <- 
+  df %>%
+  group_by(member_casual, day_of_week) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, day_of_week)
+
+df_to_export
+# export
+df_to_export_name = "ridership_data_by_subscription_type_and_week_days.csv"
+write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
+print("Data exported.")
+```
+### Visualize for number_of_rides (week day)
+```{r}
+df %>%
+  group_by(member_casual, day_of_week) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, day_of_week) %>% 
+  ggplot(aes(x = day_of_week, y = number_of_rides, fill = member_casual)) +
+  geom_col(position = "dodge")+ 
+  xlab("") + ylab("Number of Rides") + 
+  labs(fill = "Customers", 
+       title = "Number of Rides per Customer by Weekday",
+       subtitle = "Jan 2015 to Mar 2023",
+       caption = "Annual subscribers tend to use the bike more frequently on weekdays than casual customers.",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = 16),
+        plot.subtitle = element_text(hjust = 0, size = 10),
+        plot.caption = element_text(hjust = 0, size = 10))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_plots__number_of_rides_per_customer_by_weekday.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       width=16,
+       height=8)
+```
+### Visualize for average_duration (week day)
+```{r}
+df %>%
+  group_by(member_casual, day_of_week) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, day_of_week) %>% 
+  ggplot(aes(x = day_of_week, y = average_duration, fill = member_casual)) +
+  geom_col(position = "dodge")+ 
+  xlab("") + ylab("Average Rides Duration (minutes)") + 
+  labs(fill = "Customers", 
+       title = "Average Ride Duration per Customer by Weekday",
+       subtitle = "Jan 2015 to Mar 2023",
+       caption = "On average annual subscribers tend to use the bike for shorter trips on weekdays than casual customers.",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = 16),
+        plot.subtitle = element_text(hjust = 0, size = 10),
+        plot.caption = element_text(hjust = 0, size = 10))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_plots__average_ride_duration_per_customer_by_weekday.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       width=16,
+       height=8)
+```
+Comment: 
+
+# See ridership data by type (members vs casual users) and months
+```{r}
+df_to_export <- 
+  df %>%
+  group_by(member_casual, month) %>%
+  mutate(month = month.abb[as.integer(month)]) %>% 
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, month)
+
+df_to_export
+# export
+df_to_export_name = "ridership_data_by_subscription_type_and_months.csv"
+# write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
+print("Data exported.")
+```
+### Visualize for number_of_rides (month)
+
+```{r}
+df %>%
+  group_by(member_casual, month) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, month) %>% 
+  ggplot(aes(x = month, y = number_of_rides, fill = member_casual)) +
+  geom_col(position = "dodge")+ 
+  xlab("") + ylab("Number of Rides") + 
+  labs(fill = "Customers", 
+       title = "Monthly Number of Rides per Customer Type",
+       subtitle = "Jan 2015 to Mar 2023",
+       caption = "Annual subscribers ('member') have been taking more bike trips per month compared to casual customers since 2015.",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = 16),
+        plot.subtitle = element_text(hjust = 0, size = 10),
+        plot.caption = element_text(hjust = 0, size = 10))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_plots__number_of_ride_per_customer_by_month.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       width=16,
+       height=8)
+```
+Comment: The number of bike rides for each type of customer appears to be normally distributed over the months. However, there is a clear trend that annual subscribers ('member') have been taking more bike trips per month compared to casual customers since 2015.
+
+### Visualize for average_duration (month)
+```{r}
+df %>%
+  group_by(member_casual, month) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, month) %>% 
+  ggplot(aes(x = month, y = average_duration, fill = member_casual)) +
+  geom_col(position = "dodge") + 
+  xlab("Months") + ylab("Average Rides Duration (minutes)") + 
+  labs(fill = "Customers", 
+       title = "Monthly Average Ride Duration per Customer Type",
+       subtitle = "Jan 2015 to Mar 2023",
+       caption = "Since 2015, casual customers have consistently been taking longer bike trips compared to annual subscribers.",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = 16),
+        plot.subtitle = element_text(hjust = 0, size = 10),
+        plot.caption = element_text(hjust = 0, size = 10))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_plots__average_ride_duration_per_customer_by_month.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       width=16,
+       height=8)
+```
+Comment: Based on the data, it appears that there is a significant difference in the average trip duration between casual customers and annual subscribers ('member') on a monthly basis. Despite a slight decrease in the average duration over time, casual customers consistently take longer bike trips compared to annual subscribers.
+
+# See ridership data by type (members vs casual users) and years
+```{r}
+df_to_export <- 
+  df %>%
+  group_by(member_casual, year) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, year)
+
+df_to_export
+# export
+df_to_export_name = "ridership_data_by_subscription_type_and_years.csv"
+# write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
+print("Data exported.")
+```
+### Visualize for number_of_rides (year)
+```{r}
+df %>%
+  group_by(member_casual, year) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, year) %>% 
+  ggplot(aes(x = year, y = number_of_rides, color = member_casual)) +
+  geom_line() +
+  xlab("Years") + ylab("Number of Rides") + 
+  labs(fill = "Customers", 
+       title = "Yearly Number of Rides per Customer Type",
+       subtitle = "2015 to Mar 2023",
+       caption = "Overall decline number of rides. Every year, annual subscribers ('member') consistently take more bike trips compared to casual customers.",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = 16),
+        plot.subtitle = element_text(hjust = 0, size = 10),
+        plot.caption = element_text(hjust = 0, size = 10))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_plots__number_of_ride_per_customer_by_year.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       width=16,
+       height=8)
+```
+Comment: Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
+
+### Visualize for average_duration (year)
+```{r}
+df %>%
+  group_by(member_casual, year) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, year) %>% 
+  ggplot(aes(x = year, y = average_duration, color = member_casual)) +
+  geom_line()+
+  xlab("") + ylab("Average Rides Duration (minutes)")  + 
+  labs(color = "Customers", 
+       title = "Yearly Average Ride Duration per Customer Type",
+       subtitle = "2015 to Mar 2023",
+       caption = "From 2015 to March 2023, casual customers trip duration took 53% to 73% longer than for customers with annual subscription.",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = 16),
+        plot.subtitle = element_text(hjust = 0, size = 10),
+        plot.caption = element_text(hjust = 0, size = 10))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_plots__average_ride_duration_per_customer_by_year.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       width=16,
+       height=8)
+```
+Comment: From 2015 to March 2023, the average trip duration for 'member' customers does not show significant variation compared to 'casual' customers. However, 'casual' customers consistently use the bikes for much longer trips than 'member' customers, with trip duration ranging from 53% to 73% longer.
+
+From 2015 to March 2023, the duration of bike trips taken by casual customers was consistently 53% to 73% longer than those taken by customers with an annual subscription. This finding suggests that casual customers may use the bikes for leisure or recreational purposes, while members may use them for more utilitarian purposes such as commuting. It also raises questions about the pricing structure and value proposition for casual customers, who may be paying more per trip compared to members but may not be utilizing the service as frequently. Further analysis of customer behavior and preferences could provide insights into potential strategies for increasing casual customer engagement and loyalty.
+
+```{r}
+df %>%
+  group_by(member_casual, year) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, year) %>% 
+  pivot_wider(id_cols = c('year'), 
+              names_from = "member_casual", 
+              values_from = "average_duration"
+              ) %>% 
+  group_by(year) %>% 
+  summarise(percent_diff_avg_duration_member_casual = 100 * (member - casual)/casual)
+```
+Comment: Casual customers consistently use the bikes for much longer trips than member customers, with trip duration ranging from 53% to 73% longer.
+
+# See ridership data by type (members vs casual users) and ride_length_cat
+```{r}
+df_to_export <- 
+  df %>%
+  group_by(member_casual, ride_length_cat) %>%
+  summarise(number_of_rides = n()) %>% 
+  arrange(member_casual, ride_length_cat)
+
+df_to_export
+# export
+df_to_export_name = "ridership_data_by_subscription_type_and_ride_duration.csv"
+# write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
+print("Data exported.")
+```
+### Visualize for number_of_rides (ride_length_cat)
+```{r}
+df %>%
+  group_by(member_casual, ride_length_cat) %>%
+  summarise(number_of_rides = n()) %>% 
+  arrange(member_casual, ride_length_cat) %>% 
+  ggplot(aes(x = ride_length_cat, y = number_of_rides, fill = member_casual)) +
+  geom_col(position = "dodge")+
+  xlab("Rides Duration") + ylab("Number of Rides") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(fill = "Subscription Type")
+```
+
+# See ridership data by type (members vs casual users) and top 5 start_station
+```{r}
+df_to_export <- 
+  df %>%
+  group_by(member_casual, start_station_name) %>%
+  summarise(number_of_rides = n()) %>%
+  arrange(member_casual, desc(number_of_rides)) %>%
+  group_by(member_casual) %>%
+  top_n(5)
+
+df_to_export
+# export
+df_to_export_name = "ridership_data_by_subscription_type_and_top_5_start_station_name.csv"
+# write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
+print("Data exported.")
+```
+
+### Visualize for number_of_rides
+```{r}
+df %>%
+  group_by(member_casual, start_station_name) %>%
+  summarise(number_of_rides = n()) %>%
+  arrange(member_casual, desc(number_of_rides)) %>%
+  group_by(member_casual) %>%
+  top_n(5) %>% 
+  ggplot(aes(x = start_station_name, y = number_of_rides, fill = member_casual)) +
+  geom_col(position = "dodge")+
+  xlab("Start Station") + ylab("Number of Rides") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(fill = "Subscription Type")
+```
+# See ridership data by type (members vs casual users) and top 5 end_station
+There are missing values for end_station_name, we filter them out. (In real life we would have investigate them in order to fix the issue)
+```{r}
+df_to_export <- 
+  df %>%
+  group_by(member_casual, end_station_name) %>%
+  summarise(number_of_rides = n()) %>%
+  arrange(member_casual, desc(number_of_rides)) %>%
+  filter(!is.na(end_station_name)) %>% 
+  group_by(member_casual) %>%
+  top_n(5)
+
+df_to_export
+# export
+df_to_export_name = "ridership_data_by_subscription_type_and_top_5_end_station_name.csv"
+# write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
+print("Data exported.")
+```
+
+### Visualize for number_of_rides
+```{r}
+df %>%
+  group_by(member_casual, end_station_name) %>%
+  summarise(number_of_rides = n()) %>%
+  arrange(member_casual, desc(number_of_rides)) %>%
+  group_by(member_casual) %>%
+  filter(!is.na(end_station_name)) %>% 
+  top_n(5) %>% 
+  ggplot(aes(x = end_station_name, y = number_of_rides, fill = member_casual)) +
+  geom_col(position = "dodge")+
+  xlab("End Station") + ylab("Number of Rides") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(fill = "Subscription Type")
+```
+Comment: 
+
+# See ridership data by type (members vs casual users) and bikes type (number_of_rides)
+```{r}
+df %>% 
+  filter(nchar(rideable_type) > 7) %>%
+  group_by(year) %>% 
+  summarise(total_rides = n())
+```
+Note: Bikes are only available from 2020
+
+```{r}
+df_to_export <- 
+  df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(member_casual, rideable_type) %>%
+  summarise(number_of_rides = n()) %>%
+  arrange(member_casual, desc(number_of_rides))
+
+df_to_export
+# export
+df_to_export_name = "ridership_data_by_subscription_type_and_top_5_end_station_name.csv"
+# write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
+print("Data exported.")
+```
+### Visualize for number_of_rides
+```{r}
+df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(member_casual, rideable_type) %>%
+  summarise(number_of_rides = n()) %>%
+  mutate(rideable_type = str_to_title(gsub("_", " ", rideable_type))) %>% 
+  arrange(member_casual, desc(number_of_rides)) %>% 
+  ggplot(aes(x = rideable_type, y = number_of_rides, fill = member_casual)) + 
+  geom_col(position = "dodge") + 
+  xlab("Bikes Type") + ylab("Number of Rides") + 
+  labs(fill = "Subscription Type")
+```
+Comment: The most frequently used bikes among all customers are classic bikes, accounting for approximately 44.59% of all trips. Since 2020, customers with annual subscriptions have been using classic bikes more frequently, making up 60.78% of all trips. The use of docked bikes is quite similar for both customer types, with casual riders accounting for 50.46% of trips made with these bikes.
+
+One finding is that there is a difference in the preferred bike type between casual riders and customers with annual subscription. Casual riders tend to use docked bikes more frequently than electric bikes, while customers with annual subscription tend to use electric bikes more frequently than docked bikes even if both tend to use classic bikes much more often than the others type of bikes.
+
+More analysis is needed in order to determine if is really a matter of preference of availability.
+
+
+Percentages of rides per bike type
+```{r}
+df %>% 
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(rideable_type) %>%
+  summarise(number_of_rides = n()) %>% 
+  mutate(percentages = round(100 * number_of_rides / sum(number_of_rides), digits = 2)) %>% 
+  arrange(desc(percentages))
+```
+Percentage of rides 
+```{r}
+df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(rideable_type) %>%
+  summarise(total_rides = n()) %>%
+  left_join(
+    df %>%
+      filter(nchar(rideable_type) > 7) %>% 
+      group_by(member_casual, rideable_type) %>%
+      summarise(number_of_rides = n()) %>%
+      arrange(member_casual, desc(number_of_rides))
+  ) %>% 
+  mutate(percentages = round(100 * number_of_rides / total_rides, 2))
+  
+```
+
+
+
+```{r}
+df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(year, rideable_type) %>%
+  summarise(total_rides = n()) %>%
+  left_join(df %>%
+              filter(nchar(rideable_type) > 7) %>% 
+              group_by(year, member_casual, rideable_type) %>%
+              summarise(number_of_rides = n())) %>%
+  mutate(percentage_member_casual = number_of_rides/total_rides * 100) %>%
+  arrange(year, rideable_type) %>% 
+  mutate(rideable_type = str_to_title(gsub("_", " ", rideable_type))) %>% 
+  ggplot(aes(x = rideable_type, y = percentage_member_casual, fill = member_casual)) +
+  geom_col(position = "dodge") + 
+  facet_wrap(~year) + 
+  xlab("Bikes Type") + ylab("Number of Rides") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(fill = "Subscription Type")
+```
+Comment: 
+
+
+# See ridership data by type (members vs casual users) and bikes type (rides_length)
+```{r}
+df_to_export <- 
+  df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(member_casual, rideable_type) %>%
+  summarise(avg_rides_duration = mean(ride_length)) %>%
+  arrange(member_casual, desc(avg_rides_duration))
+
+df_to_export
+# export
+df_to_export_name = "ridership_data_by_subscription_type_and_top_5_end_station_name.csv"
+# write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
+print("Data exported.")
+```
+
+### Visualize for number_of_rides
+```{r}
+df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(member_casual, rideable_type) %>%
+  summarise(avg_rides_duration = mean(ride_length)) %>%
+  arrange(member_casual, desc(avg_rides_duration)) %>% 
+  mutate(rideable_type = str_to_title(gsub("_", " ", rideable_type))) %>% 
+  ggplot(aes(x = rideable_type, y = avg_rides_duration, fill = member_casual)) +
+  geom_col(position = "dodge")+
+  xlab("Bikes Type") + ylab("Number of Rides") +
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))+
+  labs(fill = "Subscription Type")
+```
+In terms of trip duration, casual riders tend to use all types of bikes for longer trips compared to customers with annual subscriptions. Both types of customers use docked bikes for longer trips, with an average duration of more than an hour (67 minutes), while classic and electric bikes have average trip durations of 31 and 20 minutes, respectively. However, casual riders use docked bikes at least two times longer than 'member' customers do. 
+
+Electric bikes are used for shorter trips by both 'casual' and 'member' customers, which could be attributed to the battery, even though most electric bikes can still be used as classic bikes with low battery power. Further analysis could be done to investigate the reason behind this difference in duration among bike types.
+
+```{r}
+str_to_title("abc de")
+```
+
+
+Diff
+```{r}
+df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(member_casual, rideable_type) %>%
+  summarise(avg_rides_duration = mean(ride_length)) %>%
+  arrange(member_casual, desc(avg_rides_duration)) %>% 
+  pivot_wider(id_cols = rideable_type, names_from = member_casual, values_from = avg_rides_duration) %>% 
+  mutate(relative_avg_duration_casual_member = casual / member,
+         diff_avg_duration_casual_member = casual - member,
+         percent_diff_avg_duration_casual_member = round(100 * (casual - member) / member, 2)
+         )
+```
+
+
+```{r}
+df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(rideable_type) %>%
+  summarise(total_rides_duration = sum(ride_length)) %>%
+  left_join(
+    df %>%
+      filter(nchar(rideable_type) > 7) %>% 
+      group_by(member_casual, rideable_type) %>%
+      summarise(rides_duration = sum(ride_length)) %>%
+      arrange(member_casual, desc(rides_duration))
+  ) %>% 
+  mutate(percentages = round(100 * rides_duration / total_rides_duration, 2))
+  
+```
+

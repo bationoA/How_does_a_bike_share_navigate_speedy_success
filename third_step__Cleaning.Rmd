@@ -1,0 +1,116 @@
+---
+title: "Third step: Cleaning"
+author: "Amos Bationo"
+date: "2023-04-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library("tidyverse")
+library("lubridate")
+```
+
+# -------------- Read all extracted csv files
+#______________________________________________________________________________#
+### ---- Data sets
+```{r Data sets, echo=FALSE}
+df_2015_to_2019 <- read_csv(file.path('data', 'df_2015_to_2019.csv'))
+
+df_2020_to_2023 <- read_csv(file.path('data', 'df_2020_to_2023.csv'))
+```
+
+
+## Cleaning
+#### Data summaries
+```{r}
+dim(df_2015_to_2019)
+dim(df_2020_to_2023)
+```
+
+```{r Summary of df_2015_to_2019}
+summary(df_2015_to_2019)
+```
+
+```{r Summary of df_2020_to_2023}
+summary(df_2020_to_2023)
+```
+#### Removing inconsistent data
+From df_2020_to_2023, remove trips with negative or zero ride_length and where "bikes were taken out of docks and checked for quality by Divvy"
+```{r}
+df_2020_to_2023 <- filter(df_2020_to_2023, ride_length > 0, start_station_name != "HQ QR")
+print("Done.")
+```
+Are there trips that have their started_at is older (greater) than their ended_at 
+(even if we've already removed trips with ride_length < 0)
+```{r}
+nrow(filter(df_2015_to_2019, started_at > ended_at))
+nrow(filter(df_2020_to_2023, started_at > ended_at))
+```
+Remove the 34 trips that have their started_at is older (greater) than their ended_at
+```{r}
+df_2015_to_2019 <- filter(df_2015_to_2019, !(started_at > ended_at))
+dim(df_2015_to_2019)
+```
+
+##### The member_casual column should have only two categories: , "member" and ""casual"
+
+```{r}
+group_by(df_2015_to_2019, member_casual) %>% 
+  summarise(number_of_trips = n(), avg_ride_duration = mean(ride_length))
+
+group_by(df_2020_to_2023, member_casual) %>% 
+  summarise(number_of_trips = n(), avg_ride_duration = mean(ride_length))
+```
+Remove the 'Dependent' category and change 'Customer' and 'Subscriber' into 'casual' and 'member' respectively
+```{r}
+df_2015_to_2019 <- filter(df_2015_to_2019, member_casual != 'Dependent') %>% 
+  mutate(member_casual = recode(member_casual,
+    'Customer' = 'casual',
+    'Subscriber' = 'member'
+  ))
+print("Done.")
+```
+Check the result
+```{r}
+group_by(df_2015_to_2019, member_casual) %>% 
+  summarise(number_of_trips = n(), avg_ride_duration = mean(ride_length))
+
+group_by(df_2020_to_2023, member_casual) %>% 
+  summarise(number_of_trips = n(), avg_ride_duration = mean(ride_length))
+```
+Combie=ne the two data sets
+```{r}
+colnames(df_2015_to_2019)
+colnames(df_2020_to_2023)
+```
+```{r}
+str(df_2015_to_2019)
+str(df_2020_to_2023)
+```
+```{r}
+# Transform ride_id into character as it is in that type in df_2015_to_2023 and contains letters there
+df_2015_to_2019$ride_id <- as.character(df_2015_to_2019$ride_id)
+df_2015_to_2019$rideable_type <- as.character(df_2015_to_2019$rideable_type)
+df_2015_to_2019$start_station_id <- as.character(df_2015_to_2019$start_station_id)
+df_2015_to_2019$end_station_id <- as.character(df_2015_to_2019$end_station_id)
+
+df_2015_to_2023 <- bind_rows(df_2015_to_2019, df_2020_to_2023)
+head(df_2015_to_2023)
+```
+```{r}
+dim(df_2015_to_2023)
+```
+```{r}
+str(df_2015_to_2023)
+```
+
+```{r}
+dim(df_2015_to_2023)
+```
+
+
+```{r export cleaned df_2020_to_2023 to csv}
+write.csv(df_2015_to_2023, file.path('data', 'df_2015_to_2023.csv'), row.names = FALSE)
+```
+
+### Next: Fourth step - Analysis

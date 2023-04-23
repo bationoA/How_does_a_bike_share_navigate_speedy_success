@@ -1,0 +1,43 @@
+---
+title: "main"
+author: "Amos BATIONO"
+date: "2023-04-08"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Case Study 1: How does a bike-share navigate speedy success?
+Source: [Link](https://d3c33hcgiwev3.cloudfront.net/aacF81H_TsWnBfNR_x7FIg_36299b28fa0c4a5aba836111daad12f1_DAC8-Case-Study-1.pdf?Expires=1681084800&Signature=WgKO~-LpPUMKTGb95H3tFbjTpbRvtu1nqBpjLACnTFrK6jBlggPYFa4lDd6jERYrYmrs7kP~4W~AJU4a3TgXhrp8XFq2c5L5gXwSIcBZNrDDKEeT1ZPXQzSUUGbFtvzy5iz-TyEvMJ-2ETjsA-oDex859GY-Ztjr8EitozVmK2w_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A)
+
+
+Loading packages
+
+```{r loading packages}
+library("tidyverse")
+```
+
+## Ask
+Three questions will guide the future marketing program:
+
+* 1. How do annual members and casual riders use Cyclistic bikes differently?
+* 2. Why would casual riders buy Cyclistic annual memberships?
+* 3. How can Cyclistic use digital media to influence casual riders to become members?
+
+## How do annual members and casual riders use Cyclistic bikes differently?
+
+### 1. A clear statement of the business task
+The objective is to analyze and compare the usage habits of annual members and casual riders of Cyclistic bicycles in order to identify differences in their behavior and preferences. The goal is to gain insights that can be used to design effective marketing strategies to convert casual cyclists into annual members. By understanding the key factors that influence user behavior and preferences, Cyclistic can tailor its marketing efforts to better meet the needs of casual cyclists and encourage them to become long-term loyal customers.
+
+
+### 2. A description of all data sources used
+
+
+#### Get all the datasets
+
+
+### 3. Documentation of any cleaning or manipulation of data
+### 4. A summary of your analysis
+### 5. Supporting visualizations and key findings
+### 6. Your top three recommendations based on your analysis
+

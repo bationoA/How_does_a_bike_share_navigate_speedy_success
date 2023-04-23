@@ -1,0 +1,345 @@
+---
+title: "Second step: Formating"
+author: "Amos Bationo"
+date: "2023-04-08"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+library("tidyverse")
+library("lubridate")
+print("Packages loaded!")
+```
+
+# -------------- Read all extracted csv files
+#______________________________________________________________________________#
+### ---- Data sets
+```{r Data sets, include=FALSE}
+df_2015 <- read_csv(file.path('data','data_2015.csv'))
+df_2016 <- read_csv(file.path('data','data_2016.csv'))
+df_2017 <- read_csv(file.path('data','data_2017.csv'))
+df_2018 <- read_csv(file.path('data','data_2018.csv'))
+df_2019 <- read_csv(file.path('data','data_2019.csv'))
+df_2020_Q1 <- read_csv(file.path('data','data_2020_Q1.csv'))
+df_2020_Q2_to_2020_11 <- read_csv(file.path('data','data_2020_Q2_to_2020_11.csv'))
+df_2020_12_to_2023 <- read_csv(file.path('data','data_2020_12_to_2023.csv'))
+print("Data sets loaded!")
+```
+
+```{r}
+filter(df_2020_12_to_2023, is.na(end_station_name))
+```
+
+Display the first 6 trips in each data set
+```{r}
+head(df_2015)
+head(df_2016)
+head(df_2017)
+head(df_2018)
+head(df_2019)
+head(df_2020_Q1)
+head(df_2020_Q2_to_2020_11)
+head(df_2020_12_to_2023)
+```
+Display the last 6 trips in each data set
+```{r}
+tail(df_2015)
+tail(df_2016)
+tail(df_2017)
+tail(df_2018)
+tail(df_2019)
+tail(df_2020_Q1)
+tail(df_2020_Q2_to_2020_11)
+tail(df_2020_12_to_2023)
+```
+
+# -------------- Fix columns-related issues
+#______________________________________________________________________________#
+
+Format times: We want all times to be in 'yyyy-mm-dd hh:mm:ss' format
+```{r}
+df_2015$starttime <- mdy_hm(df_2015$starttime)
+df_2015$stoptime <- mdy_hm(df_2015$stoptime)
+
+# df_2016 contains 2 format: mm/dd/yy hh:mm:ss and mm/dd/yy hh:mm
+### starttime
+df_2016_1 <- filter(df_2016, str_count(starttime, ":") == 1) # for mm/dd/yy hh:mm
+df_2016_2 <- filter(df_2016, str_count(starttime, ":") == 2) # mm/dd/yy hh:mm:ss
+df_2016_1$starttime <- mdy_hm(df_2016_1$starttime)
+df_2016_2$starttime <- mdy_hms(df_2016_2$starttime)
+
+df_2016 <- bind_rows(df_2016_1, df_2016_2)
+
+### stoptime
+df_2016_1 <- filter(df_2016, str_count(stoptime, ":") == 1) # for mm/dd/yy hh:mm
+df_2016_2 <- filter(df_2016, str_count(stoptime, ":") == 2) # mm/dd/yy hh:mm:ss
+df_2016_1$stoptime <- mdy_hm(df_2016_1$stoptime)
+df_2016_2$stoptime <- mdy_hms(df_2016_2$stoptime)
+
+df_2016 <- bind_rows(df_2016_1, df_2016_2)
+
+# df_2017
+df_2017$start_time <- mdy_hms(df_2017$start_time)
+df_2017$end_time <- mdy_hms(df_2017$end_time)
+
+# df_2018 # Already in the desired format
+
+# df_2019 # Already in the desired format
+
+# df_2020_Q1 # Already in the desired format
+
+# df_2020_Q2_to_2020_11 # Already in the desired format
+print("Done.")
+```
+
+Merge columns containing same information (not identical data points) from 
+### different csv files
+#### For 2018
+```{r}
+colnames(df_2018)
+```
+```{r}
+df_2018$trip_id[is.na(df_2018$trip_id)] <- 
+  df_2018$X01...Rental.Details.Rental.ID[is.na(df_2018$trip_id)]
+df_2018$bikeid[is.na(df_2018$bikeid)] <- 
+  df_2018$X01...Rental.Details.Bike.ID[is.na(df_2018$bikeid)]
+df_2018$start_time[is.na(df_2018$start_time)] <- 
+  df_2018$X01...Rental.Details.Local.Start.Time[is.na(df_2018$start_time)]
+df_2018$end_time[is.na(df_2018$end_time)] <- 
+  df_2018$X01...Rental.Details.Local.End.Time[is.na(df_2018$end_time)]
+df_2018$tripduration[is.na(df_2018$tripduration)] <- 
+  df_2018$X01...Rental.Details.Duration.In.Seconds.Uncapped[is.na(df_2018$tripduration)]
+df_2018$from_station_name[is.na(df_2018$from_station_name)] <- 
+  df_2018$X03...Rental.Start.Station.Name[is.na(df_2018$from_station_name)]
+df_2018$to_station_name[is.na(df_2018$to_station_name)] <- 
+  df_2018$X02...Rental.End.Station.Name[is.na(df_2018$to_station_name)]
+df_2018$from_station_id[is.na(df_2018$from_station_id)] <- 
+  df_2018$X03...Rental.Start.Station.ID[is.na(df_2018$from_station_id)]
+df_2018$to_station_id[is.na(df_2018$to_station_id)] <- 
+  df_2018$X02...Rental.End.Station.ID[is.na(df_2018$to_station_id)]
+df_2018$usertype[is.na(df_2018$usertype)] <- 
+  df_2018$User.Type[is.na(df_2018$usertype)]
+print("Done.")
+```
+
+```{r}
+head(filter(df_2018, is.na(start_time)))
+```
+
+
+#### For 2019
+```{r}
+colnames(df_2019)
+```
+
+```{r}
+df_2019$trip_id[is.na(df_2019$trip_id)] <- 
+  df_2019$X01...Rental.Details.Rental.ID[is.na(df_2019$trip_id)]
+df_2019$bikeid[is.na(df_2019$bikeid)] <- 
+  df_2019$X01...Rental.Details.Bike.ID[is.na(df_2019$bikeid)]
+df_2019$start_time[is.na(df_2019$start_time)] <- 
+  df_2019$X01...Rental.Details.Local.Start.Time[is.na(df_2019$start_time)]
+df_2019$end_time[is.na(df_2019$end_time)] <- 
+  df_2019$X01...Rental.Details.Local.End.Time[is.na(df_2019$end_time)]
+df_2019$tripduration[is.na(df_2019$tripduration)] <- 
+  df_2019$X01...Rental.Details.Duration.In.Seconds.Uncapped[is.na(df_2019$tripduration)]
+df_2019$from_station_name[is.na(df_2019$from_station_name)] <- 
+  df_2019$X03...Rental.Start.Station.Name[is.na(df_2019$from_station_name)]
+df_2019$to_station_name[is.na(df_2019$to_station_name)] <- 
+  df_2019$X02...Rental.End.Station.Name[is.na(df_2019$to_station_name)]
+df_2019$from_station_id[is.na(df_2019$from_station_id)] <- 
+  df_2019$X03...Rental.Start.Station.ID[is.na(df_2019$from_station_id)]
+df_2019$to_station_id[is.na(df_2019$to_station_id)] <- 
+  df_2019$X02...Rental.End.Station.ID[is.na(df_2019$to_station_id)]
+df_2019$usertype[is.na(df_2019$usertype)] <- 
+  df_2019$User.Type[is.na(df_2019$usertype)]
+print("Done.")
+```
+
+#### df_2020_Q1, df_2020_Q2_to_2020_11 and df_2020_12_to_2023 are OK
+```{r}
+colnames(df_2017)
+```
+
+## Only select columns of interest
+```{r}
+df_2015 <- select(df_2015, "trip_id", "starttime", "stoptime", 
+                          "bikeid", "tripduration", "from_station_id", 
+                          "from_station_name", "to_station_id", 
+                          "to_station_name", "usertype")
+
+df_2016 <- select(df_2016, "trip_id", "starttime", "stoptime", 
+                          "bikeid", "tripduration", "from_station_id", 
+                          "from_station_name", "to_station_id", 
+                          "to_station_name", "usertype")
+
+df_2017 <- select(df_2017, "trip_id", "start_time", "end_time", 
+                          "bikeid", "tripduration", "from_station_id", 
+                          "from_station_name", "to_station_id", 
+                          "to_station_name", "usertype")
+
+df_2018 <- select(df_2018, "trip_id", "start_time", "end_time", 
+                          "bikeid", "tripduration", "from_station_id", 
+                          "from_station_name", "to_station_id", 
+                          "to_station_name", "usertype")
+
+df_2019 <- select(df_2019, "trip_id", "start_time", "end_time", 
+                          "bikeid", "tripduration", "from_station_id", 
+                          "from_station_name", "to_station_id", 
+                          "to_station_name", "usertype")
+
+# Attribute tripduration must be calculated
+df_2020_Q1 <- select(df_2020_Q1, "ride_id", "started_at", "ended_at", 
+                          "rideable_type", "start_station_id", 
+                          "start_station_name", "end_station_id", 
+                          "end_station_name", "member_casual")
+
+# Attribute tripduration must be calculated
+df_2020_Q2_to_2020_11 <- select(df_2020_Q2_to_2020_11, "ride_id", "started_at", "ended_at", 
+                          "rideable_type", "start_station_id", 
+                          "start_station_name", "end_station_id", 
+                          "end_station_name", "member_casual")
+
+# Attribute tripduration must be calculated
+df_2020_12_to_2023 <- select(df_2020_12_to_2023, "ride_id", "started_at", "ended_at", 
+                          "rideable_type", "start_station_id", 
+                          "start_station_name", "end_station_id", 
+                          "end_station_name", "member_casual")
+
+print("Columns selection done.")
+```
+
+```{r}
+colnames(df_2015)
+colnames(df_2016)
+colnames(df_2017)
+colnames(df_2018)
+colnames(df_2019)
+colnames(df_2020_Q1)
+colnames(df_2020_Q2_to_2020_11)
+colnames(df_2020_12_to_2023)
+```
+
+```{r}
+df_2015 <- rename(df_2015,
+                  start_time = starttime,
+                  end_time = stoptime)
+df_2016 <- rename(df_2016,
+                  start_time = starttime,
+                  end_time = stoptime)
+
+```
+
+```{r}
+head(filter(df_2019, is.na(start_time)))
+```
+
+
+```{r}
+str(df_2016)
+```
+
+### After rew renamings We create 3 main data sets as the data sets can be grouped based on the columns they contain
+```{r}
+df_2015_to_2019 <- bind_rows(df_2015, df_2016, df_2016, df_2017, df_2018, df_2019)
+
+# Transform all start_station_id into characters to match data such as KA1503000044 in df_2020_12_to_2023
+df_2020_Q1$start_station_id <- as.character(df_2020_Q1$start_station_id)
+df_2020_Q1$end_station_id <- as.character(df_2020_Q1$end_station_id)
+df_2020_Q2_to_2020_11$start_station_id <- as.character(df_2020_Q2_to_2020_11$start_station_id)
+df_2020_Q2_to_2020_11$end_station_id <- as.character(df_2020_Q2_to_2020_11$end_station_id)
+
+df_2020_to_2023 <- bind_rows(df_2020_Q1, df_2020_Q2_to_2020_11, df_2020_12_to_2023)
+print("Done.")
+```
+
+Check the merging: rows should sum up
+```{r}
+dim(df_2015)+
+  dim(df_2016)+
+  dim(df_2016)+
+  dim(df_2017)+
+  dim(df_2018)+
+  dim(df_2019)
+dim(df_2015_to_2019)
+
+dim(df_2020_Q1)+
+  dim(df_2020_Q2_to_2020_11)+
+  dim(df_2020_12_to_2023)
+dim(df_2020_to_2023)
+```
+Calculate the duration of trips for df_2020_to_2023
+```{r}
+df_2020_to_2023$ride_length <- as.numeric(difftime(df_2020_to_2023$ended_at, 
+                                        df_2020_to_2023$started_at))
+
+# Re-organize the columns through a new selection
+df_2020_to_2023 <- select(df_2020_to_2023, "ride_id", "started_at", "ended_at", 
+                          "ride_length", "rideable_type", "start_station_id", 
+                          "start_station_name", "end_station_id", 
+                          "end_station_name", "member_casual")
+head(df_2020_to_2023)
+```
+```{r}
+str(df_2015_to_2019)
+```
+
+##### Rename columns of df_2015_to_2019
+```{r}
+df_2015_to_2019 <- rename(df_2015_to_2019,
+                          ride_id =trip_id ,
+                          started_at = start_time,
+                          ended_at = end_time,
+                          ride_length = tripduration,
+                          rideable_type = bikeid,
+                          start_station_id = from_station_id,
+                          start_station_name = from_station_name,
+                          end_station_id = to_station_id,
+                          end_station_name = to_station_name,
+                          member_casual = usertype)
+print("Done.")
+```
+
+```{r}
+colnames(df_2015_to_2019)
+colnames(df_2020_to_2023)
+```
+
+##### Create the date, month, day, year, and week day attributes
+```{r}
+df_2015_to_2019$date <- as.Date(df_2015_to_2019$started_at) #The default format is yyyy-mm-dd
+df_2015_to_2019$month <- format(as.Date(df_2015_to_2019$date), "%m")
+df_2015_to_2019$day <- format(as.Date(df_2015_to_2019$date), "%d")
+df_2015_to_2019$year <- format(as.Date(df_2015_to_2019$date), "%Y")
+df_2015_to_2019$day_of_week <- format(as.Date(df_2015_to_2019$date), "%A")
+print("Done with df_2015_to_2019.")
+
+df_2020_to_2023$date <- as.Date(df_2020_to_2023$started_at) #The default format is yyyy-mm-dd
+df_2020_to_2023$month <- format(as.Date(df_2020_to_2023$date), "%m")
+df_2020_to_2023$day <- format(as.Date(df_2020_to_2023$date), "%d")
+df_2020_to_2023$year <- format(as.Date(df_2020_to_2023$date), "%Y")
+df_2020_to_2023$day_of_week <- format(as.Date(df_2020_to_2023$date), "%A")
+print("Done with df_2020_to_2023")
+```
+
+```{r}
+str(df_2015_to_2019)
+str(df_2020_to_2023)
+```
+##### Summaries
+```{r Summary of df_2015_to_2019}
+summary(df_2015_to_2019)
+```
+
+```{r Summary of df_2020_to_2023}
+summary(df_2020_to_2023)
+```
+
+##### Save the 2 formated data sets
+```{r Save the 2 formated data sets}
+write.csv(df_2015_to_2019, file = file.path('data', 'df_2015_to_2019.csv'), row.names = FALSE)
+
+write.csv(df_2020_to_2023, file = file.path('data', 'df_2020_to_2023.csv'), row.names = FALSE)
+```
+
+### Next: Third step - Cleaning

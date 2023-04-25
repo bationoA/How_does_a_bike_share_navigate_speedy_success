@@ -1,10 +1,11 @@
 ---
 title: "main"
-author: "Amos BATIONO"
+author: "bationoA"
 date: "2023-04-08"
 output:
   html_document: default
   pdf_document: default
+  fig_caption: yes
 ---
 
 # Case Study: How does a bike-share navigate speedy success?
@@ -49,10 +50,27 @@ This project contains different files with different purpose:
 * [first_step__extraction_script](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/first_step__extraction_script.Rmd): Contains scripts to download all data sets, extract and combine relevant csv files. The extractions scripts can easily be modify to download only data sets based on years. The scripts in this file should be the first to be ran
 * [second_step__Formating](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/second_step__Formating.Rmd): To be ran at the after first_step__extraction_script, it contains scripts to consolidate the format of data sets (date-time), rename columns or combine all data sets into only 2
 * [third_step__Cleaning](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/third_step__Cleaning.Rmd): This contains scripts for cleaning the previous 2 data sets and combine them into one. 
-* [herefourth_step__analysis](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/fourth_step__analysis.Rmd): This file contains scripts for all the analysis related to to case study
+* [fourth_step__analysis](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/fourth_step__analysis.Rmd): This file contains scripts for all the analysis related to to case study
 
 
 ### 4. A summary of your analysis
+##### In general
+```{r fig1, echo=FALSE, fig.cap="Caption for the figure", out.width = "100%", fig.align = "right"}
+knitr::include_graphics(file.path("outputs", "img", "box_plots__ride_duration_by_customer_type.png"))
+```
+
+dkemdend dede deed '\ref{fig:fig1}' okpokfokrfrf
+
+# Findings
+* Duration
+  - Casual customers' trips tend to last much longer than those of annual subscribers.
+  - This difference is statistically significant at more than 99.99%
+  - The average time spent for daily trips by casual customers is more than the double of the average time spent by member customers.
+  - The average time spent for monthly trips by casual customers is more than the double of the average time spent by member customers.
+* Number
+  - here is a clear trend that annual subscribers ('member') have been taking more bike trips per month compared to casual customers since 2015.
+  - Casual and member customers tend to use bikes at the same rate during weekends (Saturday and Sunday). However, during working days, member customers use the bikes 1 to 2 times more frequently than casual customer.
+* 
 
 ### 5. Supporting visualizations and key findings
 ### 6. Your top three recommendations based on your analysis

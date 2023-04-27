@@ -68,9 +68,12 @@ dkemdend dede deed '\ref{fig:fig1}' okpokfokrfrf
   - The average time spent for daily trips by casual customers is more than the double of the average time spent by member customers.
   - The average time spent for monthly trips by casual customers is more than the double of the average time spent by member customers.
 * Number
+  - Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
   - here is a clear trend that annual subscribers ('member') have been taking more bike trips per month compared to casual customers since 2015.
   - Casual and member customers tend to use bikes at the same rate during weekends (Saturday and Sunday). However, during working days, member customers use the bikes 1 to 2 times more frequently than casual customer.
-* 
+* Stations
+
+* Bike type
 
 ### 5. Supporting visualizations and key findings
 ### 6. Your top three recommendations based on your analysis

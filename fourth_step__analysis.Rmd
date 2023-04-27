@@ -503,6 +503,7 @@ df_to_export_name = "ridership_data_by_subscription_type_and_years.csv"
 # write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
 print("Data exported.")
 ```
+
 ### Visualize for number_of_rides (year)
 ```{r}
 df %>%
@@ -519,16 +520,16 @@ df %>%
        subtitle = "2015 to Mar 2023",
        caption = "Overall decline number of rides. Every year, annual subscribers ('member') consistently take more bike trips compared to casual customers.",
   ) + 
-  theme(plot.title = element_text(hjust = 0, size = 16),
-        plot.subtitle = element_text(hjust = 0, size = 10),
-        plot.caption = element_text(hjust = 0, size = 10))
+  theme(plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size))
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_plots__number_of_ride_per_customer_by_year.png')
 ## ggsave save the last image produced
 ggsave(file_name,
-       width=16,
-       height=8)
+       width=img_width,
+       height=img_height)
 
 ```
 Comment: Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
@@ -542,23 +543,23 @@ df %>%
             ) %>% 
   arrange(member_casual, year) %>% 
   ggplot(aes(x = year, y = average_duration, color = member_casual)) +
-  geom_line()+
+  geom_line() + 
   xlab("") + ylab("Average Rides Duration (minutes)")  + 
   labs(color = "Customers", 
        title = "Yearly Average Ride Duration per Customer Type",
        subtitle = "2015 to Mar 2023",
        caption = "From 2015 to March 2023, casual customers trip duration took 53% to 73% longer than for customers with annual subscription.",
   ) + 
-  theme(plot.title = element_text(hjust = 0, size = 16),
-        plot.subtitle = element_text(hjust = 0, size = 10),
-        plot.caption = element_text(hjust = 0, size = 10))
+  theme(plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size))
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_plots__average_ride_duration_per_customer_by_year.png')
 ## ggsave save the last image produced
 ggsave(file_name,
-       width=16,
-       height=8)
+       width=img_width,
+       height=img_height)
 ```
 Comment: From 2015 to March 2023, the average trip duration for 'member' customers does not show significant variation compared to 'casual' customers. However, 'casual' customers consistently use the bikes for much longer trips than 'member' customers, with trip duration ranging from 53% to 73% longer.
 
@@ -594,6 +595,7 @@ df_to_export_name = "ridership_data_by_subscription_type_and_ride_duration.csv"
 # write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
 print("Data exported.")
 ```
+
 ### Visualize for number_of_rides (ride_length_cat)
 ```{r}
 df %>%
@@ -602,9 +604,15 @@ df %>%
   arrange(member_casual, ride_length_cat) %>% 
   ggplot(aes(x = ride_length_cat, y = number_of_rides, fill = member_casual)) +
   geom_col(position = "dodge")+
-  xlab("Rides Duration") + ylab("Number of Rides") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  labs(fill = "Subscription Type")
+  xlab("Rides Duration") + ylab("Number of Rides") + 
+  labs(color = "Customers", 
+       title = "Number of Rides VS Ride Duration per Customer Type",
+       subtitle = "Duration category",
+       caption = "Caption",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size))
 ```
 
 # See ridership data by type (members vs casual users) and top 5 start_station
@@ -638,6 +646,35 @@ df %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(fill = "Subscription Type")
 ```
+Comment: There is a clear difference between casual and member customers in terms of starting station. Most casual riders start their trips at the 'Streeter Dr & Grand Ave' station (457,718 trips), with more than 2 times the number of started rides by member customers (124,443 trips). In the other hand member customers mostly go to the 'Clinton St & Washington Blvd' station to pick up a bike for their trip. However their number of rides (278,769 trips) less differ from the one of casual customers as it is just 0.92 times higher than the number of rides of casual customers.
+
+```{r}
+df_to_export <- 
+  df %>%
+  group_by(member_casual, start_station_name) %>%
+  summarise(number_of_rides = n()) %>%
+  arrange(member_casual, desc(number_of_rides)) %>%
+  group_by(member_casual) %>%
+  top_n(1) %>% 
+  
+
+df_to_export
+```
+Use the two 
+```{r}
+df %>%
+  group_by(member_casual, start_station_name) %>%
+  summarise(number_of_rides = n()) %>%
+  arrange(member_casual, desc(number_of_rides)) %>%
+  group_by(member_casual, start_station_name) %>%
+  top_n(1) %>% 
+  filter(start_station_name %in% c('Streeter Dr & Grand Ave', 'Clinton St & Washington Blvd')) %>% 
+  pivot_wider(id_cols = start_station_name, names_from = member_casual, values_from = number_of_rides) %>% 
+  mutate(number_of_rides_casual_relative_member = (casual - member) / member,
+         number_of_rides_member_relative_casual = (member - casual) / casual)
+```
+Comment: There is a clear difference between casual and member customers in terms of starting station.
+
 # See ridership data by type (members vs casual users) and top 5 end_station
 There are missing values for end_station_name, we filter them out. (In real life we would have investigate them in order to fix the issue)
 ```{r}

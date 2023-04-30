@@ -10,12 +10,16 @@ Loading packages
 ```{r loading packages and figure config, echo=FALSE}
 library("tidyverse")
 library("ggplot2")
+library("gridExtra")  # Combine plots in one figure
 library("lawstat")  # to perform a Levene's test for homogeneity of variances using the 'leveneTest' 
 
 # fig config}
 title_size <- 16
 subtitle_size <- 12
 caption_size <- 12
+img_width <- 10
+img_height <- 5
+casual_member_colors <- c("#DFAE41","#109FC6")
 ```
 
 # -------------- Descriptive analysis
@@ -148,6 +152,7 @@ Checking for missing values in 'ride_length_cat'
 ```{r}
 filter(df, is.na(ride_length_cat))[c('ride_length', 'ride_length_cat')]
 ```
+
 # Basics stats of ride_length: Compare members and casual users
 ```{r}
 df_to_export <-
@@ -170,12 +175,6 @@ The longest ride length for casual bikers was 238,940 minutes, which is more tha
 ### Visualize: Compare casual vs member' ride_length in Boxplots
 
 ```{r}
-title_size <- 16
-subtitle_size <- 12
-caption_size <- 12
-img_width <- 10
-img_height <- 10
-
 # Calculate quartiles and interquartile range
 q1 <- quantile(df$ride_length, 0.25)
 q3 <- quantile(df$ride_length, 0.75)
@@ -189,26 +188,28 @@ lower_bound <- q1 - 1.5*iqr
 df %>% filter(ride_length >= lower_bound & ride_length <= upper_bound) %>% 
   ggplot(aes(x = member_casual, y = ride_length, fill = member_casual)) + 
   geom_boxplot() + 
-  xlab("Subscription Type") + ylab("Ride Duration (in minutes)") + 
+  xlab("") + ylab("Ride Duration (in minutes)") + 
   labs(fill = "Customers", caption = "") + 
   labs(fill = "Customers", 
        title = "Ride Duration by Customer Type (Casual vs. Member)",
        subtitle = "Jan 2015 to Mar 2023 (outliers were removed based on quantiles)",
-       caption = "Casual customers' trips tend to last much longer than those of annual subscribers.",
+       caption = "Trips initiated by casual customers tend to take much more time than the ones initiated by customers with annual subscription.",
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size))
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_fill_manual(values = casual_member_colors)
+  
 
 # Save the plot as png image
-# file_name = file.path('outputs', 'img', 'box_plots__ride_duration_by_customer_type.png')
-## ggsave save the last image produced
+file_name = file.path('outputs', 'img', 'box_plots__ride_duration_by_customer_type.png')
+# ggsave save the last image produced
 ggsave(file_name,
        width=img_width,
        height=img_height)
 ```
 
-Comment: After removing the outliers it appears that 'member' subscription type of customers tend to use the bikes for shorter trips compared to the 'casual' customers. Let's assess the strength of this hypothesis throught a statistical test.
+Comment: After removing the outliers it appears that 'member' subscription type of customers tend to use the bikes for shorter trips compared to the 'casual' customers. Let's assess the strength of this hypothesis through a statistical test.
 
 ## T-Test for comparing the average duraction trip of the to types of customes (casual and member)
 The assumptions of the two-sample t-test are:
@@ -218,8 +219,45 @@ The assumptions of the two-sample t-test are:
     Homogeneity of variance: The variance of the data should be equal in both groups.
     Random sampling: The samples should be randomly selected from their respective populations.
     
+    
+Function to save all tests results in one data frame
+```{r}
+add_to_tests_table <- function(){
+  if(!(test_name %in% tests_table$Test)){
+  new_test <- data.frame(Test = test_name, H0 = NA, Alpha = NA, P_value = NA, Reject_H0 = NA)
+  tests_table <- rbind(tests_table, new_test)
+  print(paste0("Added: ", test_name))
+  }else{
+    print(paste0("Updated: ", test_name))
+  }
+tests_table <- tests_table %>% 
+  mutate(
+    H0 = ifelse(
+      Test == test_name, test_H0, H0),
+    Alpha = ifelse(
+      Test == test_name, test_alpha, Alpha),
+    P_value = ifelse(
+      Test == test_name, 
+      ifelse(
+        test_result$p.value < smallest_p_value, paste0("p-value < ", smallest_p_value), test_result$p.value), 
+      P_value),
+    Reject_H0 = ifelse(
+      Test == test_name, ifelse(
+        test_result$p.value > test_alpha, "No", 
+        paste0("Yes (", ifelse(test_result$p.value < test_alpha, "99.99", round(100*(1-test_result$p.value), 2)), "%)")),
+      Reject_H0)
+    )
+return(tests_table)
+}
+```
+    
 #### Test for homogeneity of variance
 ```{r}
+test_name <- "Levene - Homogeneity of variance"
+test_H0 <- "variance in casual group is equal (statistically) to variance in member group"
+smallest_p_value <- 10^-5
+test_alpha <- 0.05
+tests_table <- data.frame(Test = character(), H0 = character(), Alpha = numeric(), P_value = character(), Reject_H0 = character(), stringsAsFactors = FALSE)
 # For this test we choose alpha = 0.05
 # H0: The variance of the two groups ('casual' and 'member') in terms of trips duration are similar 
 
@@ -233,16 +271,32 @@ upper_bound <- q3 + 1.5*iqr
 lower_bound <- q1 - 1.5*iqr
 
 # Filter out outliers before testing
-levene.test(y = filter(df, ride_length >= lower_bound & ride_length <= upper_bound)$ride_length, 
+test_result <- levene.test(y = filter(df, ride_length >= lower_bound & ride_length <= upper_bound)$ride_length, 
             group = filter(df, ride_length >= lower_bound & ride_length <= upper_bound)$member_casual, 
             location = "median")  # Perform Levene's test
+test_result
+
+tests_table <- add_to_tests_table()
 ```
 Result: p-value < 2.2e-16 < alpha = 0.05
 Comment: We reject the null hypothesis (H0) of Homogeneity of variance of the duration of rides between the 'casual' and 'member' customers.
+
+
+
+
+```{r}
+tests_table
+```
+
+
 #### Test for normal distribution
 ```{r}
 # For this test we choose alpha = 0.05
 # H0: The data are normally distributed 
+
+test_H0 <- "Data are normally distributed"
+smallest_p_value <- 10^-5
+test_alpha <- 0.05
 
 # ----- casual
 # Calculate quartiles and interquartile range
@@ -266,10 +320,18 @@ lower_bound_member <- q1_member - 1.5*iqr_member
 
 # Note: The maximum sample size for a shipiro test here is 5000
 # Normality test for 'casual' group
-shapiro.test(sample(filter(df, member_casual == "casual", ride_length >= lower_bound_casual & ride_length <= upper_bound_casual)$ride_length, size = 5000))
+test_name <- "Shapiro - normality of distribution - casual customers"
+test_result <- shapiro.test(sample(filter(df, member_casual == "casual", ride_length >= lower_bound_casual & ride_length <= upper_bound_casual)$ride_length, size = 5000))
+test_result
+
+tests_table <- add_to_tests_table()
 
 # Normality test for 'member' group
-shapiro.test(sample(filter(df, member_casual == "member", ride_length >= lower_bound_member & ride_length <= upper_bound_member)$ride_length, size=5000))
+test_name <- "Shapiro - normality of distribution - member customers"
+test_result <- shapiro.test(sample(filter(df, member_casual == "member", ride_length >= lower_bound_member & ride_length <= upper_bound_member)$ride_length, size=5000))
+test_result
+
+tests_table <- add_to_tests_table()
 ```
 Result: p-value < 2.2e-16 < alpha = 0.05 for both 'casual' and 'member'
 Comment: For both 'casual' and 'member', the values of rides duration are not normally distributed
@@ -278,10 +340,20 @@ Many assumptions of a T-Test are violated. If we still decide to proceed with th
 Running the T-Test anyway
 ```{r}
 # For this test we choose alpha = 0.05
-# H0: averages trips duration for 'casual' and 'member' customers are statistically equal
+# H0: averages trips duration for 'casual' and 'member' customers are not statistically different
 
-t.test(filter(df, member_casual == "casual", ride_length >= lower_bound_casual & ride_length <= upper_bound_casual)$ride_length,
-       filter(df, member_casual == "member", ride_length >= lower_bound_member & ride_length <= upper_bound_member)$ride_length)
+test_name <- "T-Test - Equality of means"
+test_H0 <- "averages trips duration for casual and member customers are not statistically different"
+smallest_p_value <- 10^-5
+test_alpha <- 0.05
+
+test_result <- t.test(filter(df, member_casual == "casual", ride_length >= lower_bound_casual & ride_length <= upper_bound_casual)$ride_length,
+                      filter(df, member_casual == "member", ride_length >= lower_bound_member & ride_length <= upper_bound_member)$ride_length)
+test_result
+tests_table <- add_to_tests_table()
+View(tests_table)
+
+
 ```
 Result: p-value < 2.2e-16 < alpha = 0.05
 Comment: We reject the null hypothesis and conclude that the difference in the average duration of the trips between 'casual' and 'member' customers is  statistically significant. However, it should be noted that the assumptions for the T-Test was violated.
@@ -291,15 +363,30 @@ Comment: We reject the null hypothesis and conclude that the difference in the a
 # Wilcoxon rank-sum test: Also known as the Mann-Whitney U test, it compares the medians of two independent groups
 
 # For this test we choose alpha = 0.05
-# H0: median value of  trips duration for 'casual' and 'member' customers are statistically equal
+# H0: median value of  trips duration for 'casual' and 'member' customers are not statistically different
+
+test_name <- "Wilcoxon rank-sum test - Equality of medians"
+test_H0 <- "median value of  trips duration for 'casual' and 'member' customers are not statistically different"
+smallest_p_value <- 10^-5
+test_alpha <- 0.05
 
 # perform the Wilcoxon rank-sum test
-wilcox.test(
+test_result <- wilcox.test(
   filter(df, member_casual == "casual", ride_length >= lower_bound_casual & ride_length <= upper_bound_casual)$ride_length,
   filter(df, member_casual == "member", ride_length >= lower_bound_member & ride_length <= upper_bound_member)$ride_length)
+
+test_result
+tests_table <- add_to_tests_table()
 ```
 Result: p-value < 2.2e-16 < alpha = 0.05
 Comment: We reject the null hypothesis and conclude that the difference in the duration of the trips between 'casual' and 'member' customers is  statistically significant.
+
+#### Save tests results
+```{r}
+write.csv(tests_table, file.path('data', 'df_test_results.csv'), row.names = FALSE)
+tests_table
+```
+
 
 # See ridership data by type (members vs casual users) and week day
 
@@ -337,7 +424,8 @@ df %>%
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size))
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_fill_manual(values = casual_member_colors)
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_plots__number_of_rides_per_customer_by_weekday.png')
@@ -376,7 +464,8 @@ df %>%
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size))
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_fill_manual(values = casual_member_colors)
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_plots__average_ride_duration_per_customer_by_weekday.png')
@@ -398,6 +487,63 @@ df %>%
   mutate(average_duration_casual_relative_member = (casual - member) / member)
 ```
 Comment: The average time spent for daily trips by casual customers is more than the double of the average time spent by member customers.
+
+
+```{r}
+p1 <- df %>%
+  group_by(member_casual, day_of_week) %>%
+  summarise(number_of_rides = n()
+            ) %>% 
+  arrange(member_casual, day_of_week) %>% 
+  ggplot(aes(x = day_of_week, y = number_of_rides, fill = member_casual)) +
+  geom_col(position = "dodge") +
+  xlab("") + ylab("Number of Rides") + 
+  labs(fill = "", 
+       title = "Daily Number of Rides",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size),
+        legend.position = "none") + 
+  scale_fill_manual(values = casual_member_colors)
+
+# create the second plot
+p2 <- df %>%
+  group_by(member_casual, day_of_week) %>%
+  summarise(average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, day_of_week) %>%
+  ggplot(aes(x = day_of_week, y = average_duration, fill = member_casual)) +
+  geom_col(position = "dodge") + 
+  xlab("") + ylab("Average Rides Duration (minutes)")  + 
+  labs(fill = "Customers", 
+       title = "Daily Average Ride Duration",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_fill_manual(values = casual_member_colors)
+
+
+# combine the two plots and share the legend
+combined_plot <- grid.arrange(p1 + guides(color = guide_legend(title = "Customers")), 
+             p2 + guides(color = guide_legend(title = "Customers")), 
+             ncol = 2, widths = c(0.8, 1))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_plots__average_number_of_rides_and_duration_per_customer_by_day.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       combined_plot,
+       width=img_width,
+       height=img_height)
+```
 
 # See ridership data by type (members vs casual users) and months
 ```{r}
@@ -435,7 +581,8 @@ df %>%
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size))
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_fill_manual(values = casual_member_colors)
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_plots__number_of_ride_per_customer_by_month.png')
@@ -464,7 +611,8 @@ df %>%
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size))
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_fill_manual(values = casual_member_colors)
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_plots__average_ride_duration_per_customer_by_month.png')
@@ -486,6 +634,63 @@ df %>%
   mutate(average_duration_casual_relative_member = (casual - member) / member)
 ```
 Comment: The average time spent for monthly trips by casual customers is more than the double of the average time spent by member customers.
+
+```{r}
+p1 <- df %>%
+  group_by(member_casual, month) %>%
+  summarise(number_of_rides = n()
+            ) %>% 
+  arrange(member_casual, month) %>% 
+  ggplot(aes(x = month, y = number_of_rides, fill = member_casual)) +
+  geom_col(position = "dodge") +
+  xlab("") + ylab("Number of Rides") + 
+  labs(fill = "", 
+       title = "Monthly Number of Rides",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size),
+        legend.position = "none") + 
+  scale_fill_manual(values = casual_member_colors)
+
+# create the second plot
+p2 <- df %>%
+  group_by(member_casual, month) %>%
+  summarise(average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, month) %>%
+  ggplot(aes(x = month, y = average_duration, fill = member_casual)) +
+  geom_col(position = "dodge") + 
+  xlab("") + ylab("Average Rides Duration (minutes)")  + 
+  labs(fill = "Customers", 
+       title = "Monthly Average Ride Duration",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_fill_manual(values = casual_member_colors)
+
+
+# combine the two plots and share the legend
+combined_plot <- grid.arrange(p1 + guides(color = guide_legend(title = "Customers")), 
+             p2 + guides(color = guide_legend(title = "Customers")), 
+             ncol = 2, widths = c(0.8, 1))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_plots__average_number_of_rides_and_duration_per_customer_by_month.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       combined_plot,
+       width=img_width,
+       height=img_height)
+```
+
 
 # See ridership data by type (members vs casual users) and years
 ```{r}
@@ -522,7 +727,8 @@ df %>%
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size))
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_color_manual(values = casual_member_colors)
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_plots__number_of_ride_per_customer_by_year.png')
@@ -533,6 +739,21 @@ ggsave(file_name,
 
 ```
 Comment: Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
+
+
+```{r}
+df %>%
+  group_by(member_casual, year) %>%
+  summarise(number_of_rides = n()
+            ) %>% 
+  arrange(member_casual, year) %>% 
+  pivot_wider(id_cols = c('year'), 
+              names_from = "member_casual", 
+              values_from = "number_of_rides"
+              ) %>% 
+  group_by(year) %>% 
+  mutate(percent_diff_number_of_rides_casual_member = 100 * (casual - member)/member)
+```
 
 ### Visualize for average_duration (year)
 ```{r}
@@ -552,7 +773,8 @@ df %>%
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size))
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_color_manual(values = casual_member_colors)
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_plots__average_ride_duration_per_customer_by_year.png')
@@ -577,9 +799,68 @@ df %>%
               values_from = "average_duration"
               ) %>% 
   group_by(year) %>% 
-  summarise(percent_diff_avg_duration_member_casual = 100 * (member - casual)/casual)
+  mutate(percent_diff_avg_duration_member_casual = 100 * (member - casual)/casual)
 ```
 Comment: Casual customers consistently use the bikes for much longer trips than member customers, with trip duration ranging from 53% to 73% longer.
+
+###### Combine yearly number of rides and duration in one figure
+```{r}
+p1 <- df %>%
+  group_by(member_casual, year) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+  ) %>% 
+  arrange(member_casual, year) %>%
+  ggplot(aes(x = year, y = number_of_rides, color = member_casual)) +
+  geom_line() +
+  xlab("") + ylab("Number of Rides") + 
+  labs(color = "", 
+       title = "Yearly Number of Rides",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size),
+        legend.position = "none") + 
+  scale_color_manual(values = casual_member_colors)
+
+# create the second plot
+p2 <- df %>%
+  group_by(member_casual, year) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+  ) %>% 
+  arrange(member_casual, year) %>%
+  ggplot(aes(x = year, y = average_duration, color = member_casual)) +
+  geom_line() + 
+  xlab("") + ylab("Average Rides Duration (minutes)")  + 
+  labs(color = "Customers", 
+       title = "Yearly Average Ride Duration",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_color_manual(values = casual_member_colors)
+
+
+# combine the two plots and share the legend
+combined_plot <- grid.arrange(p1 + guides(color = guide_legend(title = "Customers")), 
+             p2 + guides(color = guide_legend(title = "Customers")), 
+             ncol = 2, widths = c(0.8, 1))
+
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'line_plots__average_number_of_rides_and_duration_per_customer_by_year.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       combined_plot,
+       width=img_width,
+       height=img_height)
+```
+
 
 # See ridership data by type (members vs casual users) and ride_length_cat
 ```{r}
@@ -612,7 +893,8 @@ df %>%
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size))
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_fill_manual(values = casual_member_colors)
 ```
 
 # See ridership data by type (members vs casual users) and top 5 start_station
@@ -644,7 +926,16 @@ df %>%
   geom_col(position = "dodge")+
   xlab("Start Station") + ylab("Number of Rides") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(fill = "Subscription Type")
+  labs(fill = "Customers") + 
+  scale_fill_manual(values = casual_member_colors)
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_chart__average_number_of_rides_and_duration_per_customer_by_year.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       combined_plot,
+       width=img_width,
+       height=img_height)
 ```
 Comment: There is a clear difference between casual and member customers in terms of starting station. Most casual riders start their trips at the 'Streeter Dr & Grand Ave' station (457,718 trips), with more than 2 times the number of started rides by member customers (124,443 trips). In the other hand member customers mostly go to the 'Clinton St & Washington Blvd' station to pick up a bike for their trip. However their number of rides (278,769 trips) less differ from the one of casual customers as it is just 0.92 times higher than the number of rides of casual customers.
 
@@ -707,7 +998,8 @@ df %>%
   geom_col(position = "dodge")+
   xlab("End Station") + ylab("Number of Rides") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  labs(fill = "Subscription Type")
+  labs(fill = "Customers") + 
+  scale_fill_manual(values = casual_member_colors)
 ```
 Comment: 
 
@@ -734,6 +1026,7 @@ df_to_export_name = "ridership_data_by_subscription_type_and_top_5_end_station_n
 # write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
 print("Data exported.")
 ```
+
 ### Visualize for number_of_rides
 ```{r}
 df %>%
@@ -744,8 +1037,9 @@ df %>%
   arrange(member_casual, desc(number_of_rides)) %>% 
   ggplot(aes(x = rideable_type, y = number_of_rides, fill = member_casual)) + 
   geom_col(position = "dodge") + 
-  xlab("Bikes Type") + ylab("Number of Rides") + 
-  labs(fill = "Subscription Type")
+  xlab("Bikes Type") + ylab("Number of Rides") +
+  labs(fill = "Customers") + 
+  scale_fill_manual(values = casual_member_colors)
 ```
 Comment: The most frequently used bikes among all customers are classic bikes, accounting for approximately 44.59% of all trips. Since 2020, customers with annual subscriptions have been using classic bikes more frequently, making up 60.78% of all trips. The use of docked bikes is quite similar for both customer types, with casual riders accounting for 50.46% of trips made with these bikes.
 
@@ -798,8 +1092,9 @@ df %>%
   geom_col(position = "dodge") + 
   facet_wrap(~year) + 
   xlab("Bikes Type") + ylab("Number of Rides") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  labs(fill = "Subscription Type")
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  labs(fill = "Customers") + 
+  scale_fill_manual(values = casual_member_colors)
 ```
 Comment: 
 
@@ -831,8 +1126,9 @@ df %>%
   ggplot(aes(x = rideable_type, y = avg_rides_duration, fill = member_casual)) +
   geom_col(position = "dodge")+
   xlab("Bikes Type") + ylab("Number of Rides") +
-  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))+
-  labs(fill = "Subscription Type")
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5)) + 
+  labs(fill = "Customers") + 
+  scale_fill_manual(values = casual_member_colors)
 ```
 In terms of trip duration, casual riders tend to use all types of bikes for longer trips compared to customers with annual subscriptions. Both types of customers use docked bikes for longer trips, with an average duration of more than an hour (67 minutes), while classic and electric bikes have average trip durations of 31 and 20 minutes, respectively. However, casual riders use docked bikes at least two times longer than 'member' customers do. 
 

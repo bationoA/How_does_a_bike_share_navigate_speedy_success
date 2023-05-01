@@ -420,7 +420,7 @@ df %>%
   labs(fill = "Customers", 
        title = "Number of Rides per Customer by Weekday",
        subtitle = "Jan 2015 to Mar 2023",
-       caption = "Annual subscribers tend to use the bike more frequently on weekdays than casual customers.",
+       caption = "",
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
@@ -460,7 +460,7 @@ df %>%
   labs(fill = "Customers", 
        title = "Average Ride Duration per Customer by Weekday",
        subtitle = "Jan 2015 to Mar 2023",
-       caption = "On average annual subscribers tend to use the bike for shorter trips on weekdays than casual customers.",
+       caption = "",
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
@@ -922,22 +922,29 @@ df %>%
   arrange(member_casual, desc(number_of_rides)) %>%
   group_by(member_casual) %>%
   top_n(5) %>% 
-  ggplot(aes(x = start_station_name, y = number_of_rides, fill = member_casual)) +
-  geom_col(position = "dodge")+
+  mutate(percent = round(100 * (number_of_rides / nrow(df)), 2)) %>% 
+  ggplot(aes(x = start_station_name, y = percent, fill = member_casual)) +
+  geom_col(position = "dodge") + 
   xlab("Start Station") + ylab("Number of Rides") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(fill = "Customers") + 
+  labs(fill = "Customers", 
+       title = "Top 5 Start Stations  per Customer Type",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size),
+        axis.text.x = element_text(angle = 45, hjust = 1)) + 
   scale_fill_manual(values = casual_member_colors)
 
 # Save the plot as png image
-file_name = file.path('outputs', 'img', 'bar_chart__average_number_of_rides_and_duration_per_customer_by_year.png')
+file_name = file.path('outputs', 'img', 'bar_chart__number_of_rides_per_customer_by_top_5_start_station.png')
 ## ggsave save the last image produced
 ggsave(file_name,
-       combined_plot,
        width=img_width,
        height=img_height)
 ```
-Comment: There is a clear difference between casual and member customers in terms of starting station. Most casual riders start their trips at the 'Streeter Dr & Grand Ave' station (457,718 trips), with more than 2 times the number of started rides by member customers (124,443 trips). In the other hand member customers mostly go to the 'Clinton St & Washington Blvd' station to pick up a bike for their trip. However their number of rides (278,769 trips) less differ from the one of casual customers as it is just 0.92 times higher than the number of rides of casual customers.
+Comment: There is a clear difference between casual and member customers in terms of starting station. The Streeter Dr & Grand Ave station accounts for 1.55% (457,718) of rides initiated by casual customers, which is more than 2 times the number of started rides by member customers (124,443 trips). In the other hand, 0.94% (278,769) of rides initiated by member customers are from the Clinton St & Washington Blvd station. However their number of rides  less differ from the one of casual customers as it is just 0.92 times higher than the number of rides of casual customers.
 
 ```{r}
 df_to_export <- 
@@ -997,9 +1004,23 @@ df %>%
   ggplot(aes(x = end_station_name, y = number_of_rides, fill = member_casual)) +
   geom_col(position = "dodge")+
   xlab("End Station") + ylab("Number of Rides") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  labs(fill = "Customers") + 
+  labs(fill = "Customers", 
+       title = "Top 5 End Stations  per Customer Type",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size),
+        axis.text.x = element_text(angle = 45, hjust = 1)) + 
   scale_fill_manual(values = casual_member_colors)
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_chart__number_of_rides_per_customer_by_top_5_end_station.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       width=img_width,
+       height=img_height)
 ```
 Comment: 
 
@@ -1057,6 +1078,7 @@ df %>%
   mutate(percentages = round(100 * number_of_rides / sum(number_of_rides), digits = 2)) %>% 
   arrange(desc(percentages))
 ```
+
 Percentage of rides 
 ```{r}
 df %>%
@@ -1125,14 +1147,14 @@ df %>%
   mutate(rideable_type = str_to_title(gsub("_", " ", rideable_type))) %>% 
   ggplot(aes(x = rideable_type, y = avg_rides_duration, fill = member_casual)) +
   geom_col(position = "dodge")+
-  xlab("Bikes Type") + ylab("Number of Rides") +
+  xlab("Bikes Type") + ylab("Average Rides Duration (minutes)") +
   theme(axis.text.x = element_text(angle = 0, hjust = 0.5)) + 
   labs(fill = "Customers") + 
   scale_fill_manual(values = casual_member_colors)
 ```
-In terms of trip duration, casual riders tend to use all types of bikes for longer trips compared to customers with annual subscriptions. Both types of customers use docked bikes for longer trips, with an average duration of more than an hour (67 minutes), while classic and electric bikes have average trip durations of 31 and 20 minutes, respectively. However, casual riders use docked bikes at least two times longer than 'member' customers do. 
+In terms of trip duration, no matter which type of bike is considered, casual customers tend to use them much longer during each ride than customers with annual subscriptions. Indeed, casual riders use docked bikes at least two times longer than member customers (67 versus 18 minutes) , while classic and electric bikes have average trip duration of 31 and 20 minutes, respectively.
 
-Electric bikes are used for shorter trips by both 'casual' and 'member' customers, which could be attributed to the battery, even though most electric bikes can still be used as classic bikes with low battery power. Further analysis could be done to investigate the reason behind this difference in duration among bike types.
+Electric bikes are used for shorter trips by both casual and member customers, which could be attributed to the battery life, even though most electric bikes can still be used as classic bikes with low battery power. Further analysis could be done to investigate the reason behind this difference in duration among bike types.
 
 ```{r}
 str_to_title("abc de")

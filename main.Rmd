@@ -24,11 +24,11 @@ This case study will focus on the first question.
 
 ## How do annual members and casual riders use Cyclistic bikes differently?
 
-### 1. A clear statement of the business task
+### 1. Business task
 The objective is to analyze and compare the usage habits of annual members and casual riders of Cyclistic bicycles in order to identify differences in their behavior and preferences. The goal is to gain insights that can be used to design effective marketing strategies to convert casual cyclists into annual members. By understanding the key factors that influence user behavior and preferences, Cyclistic can tailor its marketing efforts to better meet the needs of casual cyclists and encourage them to become long-term loyal customers.
 
 
-### 2. A description of all data sources used
+### 2. Description of data sources
 The data used in this study are Cyclistic’s historical trip data. The initial case study suggests to get only the previous 12 months trips data but we will consider all data (from January 2015 to March 2023). This could give more insights regarding changes over years.
 
 There are several csv files containing trips data ([seen list sata sets here](https://divvy-tripdata.s3.amazonaws.com/index.html)). The name of variables are not consistent across all data sets but they contain similar information. The information that can be found in these data sets are:
@@ -53,8 +53,8 @@ This project contains different files with different purpose:
 * [fourth_step__analysis](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/fourth_step__analysis.Rmd): This file contains scripts for all the analysis related to to case study
 
 
-### 4. A summary of your analysis
-### In general
+### 3. Summary of analysis
+#### 1. In general
 
 Comment: After removing the outliers it appears that 'member' subscription type of customers tend to use the bikes for shorter trips compared to the 'casual' customers. Let's assess the strength of this hypothesis throught a statistical test.
 
@@ -62,18 +62,16 @@ Comment: After removing the outliers it appears that 'member' subscription type 
 knitr::include_graphics(file.path("outputs", "img", "box_plots__ride_duration_by_customer_type.png"))
 ```
 
-### Annual
+#### 2. Annual
 Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
 
-From 2015 to March 2023, the average trip duration for 'member' customers does not show significant variation compared to 'casual' customers. However, 'casual' customers consistently use the bikes for much longer trips than 'member' customers, with trip duration ranging from 53% to 73% longer.
-
-From 2015 to March 2023, the duration of bike trips taken by casual customers was consistently 53% to 73% longer than those taken by customers with an annual subscription. This finding suggests that casual customers may use the bikes for leisure or recreational purposes, while members may use them for more utilitarian purposes such as commuting. It also raises questions about the pricing structure and value proposition for casual customers, who may be paying more per trip compared to members but may not be utilizing the service as frequently. Further analysis of customer behavior and preferences could provide insights into potential strategies for increasing casual customer engagement and loyalty.
+From 2015 to March 2023, the average trip duration for 'member' customers does not show significant variation compared to 'casual' customers. However, 'casual' customers consistently use the bikes for much longer trips than 'member' customers, with trip duration ranging from 53% to 73% longer. This finding could suggest that casual customers may use the bikes for leisure or recreational purposes, while members may use them for more utilitarian purposes such as commuting. It also raises questions about the pricing structure and value proposition for casual customers, who may be paying more per trip compared to members but may not be utilizing the service as frequently. Further analysis of customer behavior and preferences could provide insights into potential strategies for increasing casual customer engagement and loyalty.
 
 ```{r fig2, echo=FALSE, fig.cap="", out.width = "100%"}
 knitr::include_graphics(c(file.path("outputs", "img", "line_plots__average_number_of_rides_and_duration_per_customer_by_year.png")))
 ```
 
-### Monthly
+#### 3. Monthly
 
 Comment: The number of bike rides for each type of customer appears to be normally distributed over the months. However, there is a clear trend that annual subscribers ('member') have been taking more bike trips per month compared to casual customers since 2015.
 
@@ -85,7 +83,7 @@ Comment: The average time spent for monthly trips by casual customers is more th
 knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number_of_rides_and_duration_per_customer_by_month.png")))
 ```
 
-### Daily
+#### 4. Daily
 
 Comment: Casual and member customers tend to use bikes at the same rate during weekends (Saturday and Sunday). However, during working days, member customers use the bikes 1 to 2 times more frequently than casual customer.
 
@@ -97,104 +95,65 @@ Comment: The average time spent for daily trips by casual customers is more than
 knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number_of_rides_and_duration_per_customer_by_day.png")))
 ```
 
-### T-Test for comparing the distribution of the duraction trip of the two types of customes (casual and member)
+#### 5. Testing the difference of trips duration between casual and member customers
+From the above analysis it appeared that a clear difference exists between casual and member customers when it comes to the duration of their rides. In this section we'll use statistical tests to evaluate the significance of this difference. The tests will be on central trends such as means or medians.
 
-1. T-Test test
-The assumptions of the two-sample Student test (T-Test) are:
-
-    Normality: The data should be approximately normally distributed within each group.
-    Independence: The observations within each group should be independent.
-    Homogeneity of variance: The variance of the data should be equal in both groups.
-    Random sampling: The samples should be randomly selected from their respective populations.
-    
-    
-a. Homogeneity of variance test test
-alpha = 0.05
-p-value  < 2.2e-16
-Comment: We reject the null hypothesis (H0, with more than 99.99% confidence) of the homogeneity of variance of the duration of rides between the 'casual' and 'member' customers.
-
-b. Homogeneity of variance test
-alpha = 0.05
-p-value  < 2.2e-16
-Comment: For both 'casual' and 'member', the values of rides duration are not normally distributed ((H0, with more than 99.99% confidence))
-Many assumptions of a T-Test are violated. If we still decide to proceed with the The T-test, these violations should be mentioned.
-
-c. Student test (T-Test)
-Let's conduct a T-Test despite the violation of some of its assumptions.
-alpha = 0.05
-p-value  < 2.2e-16
-Comment: We reject the null hypothesis and conclude that the difference in the average duration of the trips between 'casual' and 'member' customers is  statistically significant. However, it should be noted that the assumptions for the T-Test was violated.
-
-2. Non parametric test: Wilcoxon, equality of medians
-alpha = 0.05
-p-value  < 2.2e-16
-Comment: We reject the null hypothesis and conclude that the difference in the duration of the trips between 'casual' and 'member' customers is  statistically significant.
-
-Once upon a time, a bike-sharing company wanted to know if there was a significant difference in the duration of the trips between two categories of customers: 'casual' and 'member'. To answer this question, the company decided to conduct a statistical analysis.
-
-First, they ran a homogeneity of variance test to check if the variances of the data were equal in both groups. The result was not in their favor, and they had to reject the null hypothesis with more than 99.99% confidence. Next, they ran a normality test, which showed that the duration of the rides for both categories was not normally distributed. These violations of assumptions were taken into account before proceeding with the T-Test.
-
-Despite the violated assumptions, the company decided to conduct a T-Test, which resulted in rejecting the null hypothesis with more than 99.99% confidence. This meant that there was a statistically significant difference in the average duration of trips between the two categories of customers. However, it was crucial to note that the assumptions for the T-Test were violated.
-
-Finally, the company conducted a non-parametric test called Wilcoxon, which tests the equality of medians. The result was also not in their favor, and they had to reject the null hypothesis with more than 99.99% confidence. Thus, they concluded that the difference in the duration of trips between 'casual' and 'member' customers was statistically significant, regardless of the type of test used.
-
-In conclusion, the company found a significant difference in the duration of trips between the two categories of customers, but they had to be mindful of the violated assumptions. This shows the importance of understanding and fulfilling the assumptions of a test before interpreting its results.
+The question we're trying to answer here is: Is there a significant difference in the duration of the trips between the two categories of customers (casual and member)? The results of different tests conducted are summarized in the bellow table.
 
 ```{r echo=FALSE}
-knitr::kable(read.csv(file.path("data", "df_test_results.csv")))
+knitr::kable(read.csv(file.path("data", "df_test_results.csv")), caption = "Test Results")
 ```
 
+We've decided to run a T-Test (Student test) to compare the average trip duration of casual and member customers
 
-### See ridership data by type (members vs casual users) and top 5 start_station
+First, we ran a homogeneity of variance test to check if the variances of the data were not statistically different in both groups. The result was not in our favor, and we had to reject the null hypothesis with more than 99.99% confidence. Next, we ran a normality test, which showed that the duration of the rides for both categories was not normally distributed. The results of these these two violate the [assumptions of a T-Test](fourth_step__analysis.Rmd). These violations of assumptions were taken into account before proceeding with the T-Test.
 
+Despite the violated assumptions, we decided to conduct a T-Test, which resulted in rejecting the null hypothesis with more than 99.99% confidence. This means that there is a statistically significant difference in the average duration of trips between the two categories of customers. However, it was crucial to note that the assumptions for the T-Test were violated, therefore alternative tests are needed to add credit to this conclusion.
 
+Finally, we decided to go for a non-parametric test (no assumptions are not required) called Wilcoxon, which tests the equality of medians. The result was in our favor as we had to reject the null hypothesis with more than 99.99% confidence. Thus, we concluded that the difference in the duration of trips between casual and member customers was statistically significant, regardless of the type of test used.
+
+#### 6. Top 5 starting stations by customers type (members vs casual users)
+
+There is a clear difference between casual and member customers in terms of starting station. Most casual riders start their trips at the 'Streeter Dr & Grand Ave' station (457,718 trips), with more than 2 times the number of started rides by member customers (124,443 trips). In the other hand member customers mostly go to the 'Clinton St & Washington Blvd' station to pick up a bike for their trip. However their number of rides (278,769 trips) less differ from the one of casual customers as it is just 0.92 times higher than the number of rides of casual customers.
 
 ```{r fig5, echo=FALSE, fig.cap="", out.width = "100%"}
-knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number_of_rides_and_duration_per_customer_by_day.png")))
+knitr::include_graphics(c(file.path("outputs", "img", "bar_chart__number_of_rides_per_customer_by_top_5_start_station.png")))
 ```
 
-# Findings
+#### 7. Bikes preference by customers type
 
-* Duration
-  - Casual customers' trips tend to last much longer than those of annual subscribers.
-  - This difference is statistically significant at more than 99.99%
-  - The average time spent for daily trips by casual customers is more than the double of the average time spent by member customers.
-  - The average time spent for monthly trips by casual customers is more than the double of the average time spent by member customers.
-* Number
-  - Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
-  - here is a clear trend that annual subscribers ('member') have been taking more bike trips per month compared to casual customers since 2015.
-  - Casual and member customers tend to use bikes at the same rate during weekends (Saturday and Sunday). However, during working days, member customers use the bikes 1 to 2 times more frequently than casual customer.
-* Stations
+number of rides and duration per bikes type and customers
 
-* Bike type
+### 4. Recommendations for an effective marketing strategy
+Based on the results of the analysis, here are nine recommendations for designing marketing strategies aimed at converting casual riders into annual members:
 
+* __1. Offer promotions and discounts for annual memberships during weekdays__: 
+When member customers tend to use the bikes more often. This can encourage casual riders to become members and take advantage of the benefits of more frequent rides during weekdays.
 
-### 5. Supporting visualizations and key findings
-### 6. Your top three recommendations based on your analysis
+* __2. Promote the benefits of annual membership for weekend riders__: 
+Although casual and member customers have similar number of rides during weekends, annual members have more flexibility to take longer trips without worrying about extra fees. Marketing campaigns should emphasize this benefit to encourage casual riders to become annual members.
 
+* __3. Offer incentives to encourage casual riders to use docked bikes more often__: 
+Since casual riders account for the majority of trips made with docked bikes, incentives such as discounts or free rides can encourage them to become more loyal customers and potentially convert to annual members.
 
-Knowing that:
-1. There are more rides initiated by member customers than casual customers during working days (Monday to Friday)
-2. casual and member customers have similar number of rides during weekends (Saturday, Sunday)
-3. Everyday, the average trip duration initiated by casual customers last longer than the ones initiated
+* __4. Focus marketing efforts on promoting the benefits of using bikes from different starting stations__: 
+Since casual customers tend to use a specific starting station much more often, marketing campaigns should focus on the benefits of exploring different areas and using bikes from different starting stations. This can encourage casual riders to become more adventurous and potentially become annual members.
 
-The goal is to design marketing strategies aimed at converting casual riders into annual members.
-These analysis answer to the question "How do annual members and casual riders use Cyclistic bikes differently?"
+* __5. Highlight the cost savings of annual memberships for frequent riders__: 
+The analysis shows that casual riders tend to use bikes for longer duration than annual members. Promoting the cost savings of an annual membership for frequent riders can encourage casual riders to become members and take advantage of the cost savings for longer trips.
 
-Wile taking into account the results of the previous statistical tests, Give 5 recommendations based on your analysis
+* __6. Focus marketing efforts on promoting the benefits of using bikes from different starting stations__: 
+Since casual customers tend to use a specific starting station much more often, marketing campaigns should focus on the benefits of exploring different areas and using bikes from different starting stations. This can encourage casual riders to become more adventurous and potentially become annual members.
 
+* __7. Highlight the cost savings of annual memberships for frequent riders__: 
+The analysis shows that casual riders tend to use bikes for longer duration than annual members. Promoting the cost savings of an annual membership for frequent riders can encourage casual riders to become members and take advantage of the cost savings for longer trips.
 
-Based on the results of the statistical tests and the information provided, here are five recommendations for designing marketing strategies aimed at converting casual riders into annual members:
+* __8. Offer membership trial periods__: 
+The company can offer casual riders the chance to try out the annual membership for a certain period of time (e.g. a week or a month) to see if they would benefit from the service. This can help to increase the number of annual members by giving casual riders a chance to experience the benefits of an annual membership without committing to it fully.
 
-Offer incentives for customers who use the service during weekdays: Since annual members ride more often during the weekdays, the company can offer incentives to casual riders who ride on weekdays, such as discounts or promotional codes. This can help to increase the number of weekday rides among casual riders and, in turn, convert them into annual members.
+* __9. Create a community for annual members__: 
+Since annual members tend to be more frequent users of the service, the company can create a community for them to promote social interaction and encourage them to use the service more often. This can help to increase their loyalty to the service and encourage casual riders to convert to annual members.
 
-Promote shorter trips: Since casual customers tend to have longer trip durations compared to annual members, the company can create promotions or special packages for shorter trips that would appeal to casual riders. This can help to convert casual riders into annual members who tend to take more frequent but shorter trips.
-
-Target infrequent casual riders: The company can target casual riders who ride less frequently but still use the service, especially during weekends. These riders may be more likely to convert to annual members if they are given incentives or promotions to use the service more often, especially during weekdays.
-
-Offer membership trial periods: The company can offer casual riders the chance to try out the annual membership for a certain period of time (e.g. a week or a month) to see if they would benefit from the service. This can help to increase the number of annual members by giving casual riders a chance to experience the benefits of an annual membership without committing to it fully.
-
-Create a community for annual members: Since annual members tend to be more frequent users of the service, the company can create a community for them to promote social interaction and encourage them to use the service more often. This can help to increase their loyalty to the service and encourage casual riders to convert to annual members.
 
 ### Act
 Guiding questions

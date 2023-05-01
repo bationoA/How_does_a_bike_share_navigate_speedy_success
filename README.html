@@ -390,15 +390,71 @@ factors that influence user behavior and preferences, Cyclistic can
 tailor its marketing efforts to better meet the needs of casual cyclists
 and encourage them to become long-term loyal customers.</p>
 </div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>The data used in this study are Cyclistic’s historical trip data. The
+initial case study suggests to get only the previous 12 months trips
+data but we will consider all data (from January 2015 to March 2023).
+This could give more insights regarding changes over years.</p>
+<p>There are several csv files containing trips data (<a href="https://divvy-tripdata.s3.amazonaws.com/index.html">seen list sata
+sets here</a>). The name of variables are not consistent across all data
+sets but they contain similar information. The information that can be
+found in these data sets are:</p>
+<ul>
+<li>trip_id: ID attached to each trip taken</li>
+<li>start_time: day and time trip started, in CST</li>
+<li>stop_time: day and time trip ended, in CST</li>
+<li>bikeid: ID attached to each bike</li>
+<li>tripduration: time of trip in seconds</li>
+<li>from_station_name: name of station where trip originated</li>
+<li>to_station_name: name of station where trip terminated</li>
+<li>from_station_id: ID of station where trip originated</li>
+<li>to_station_id: ID of station where trip terminated</li>
+<li>usertype: “Customer” is a rider who purchased a 24-Hour Pass;
+“Subscriber” is a rider who purchased an Annual Membership</li>
+<li>gender: gender of rider</li>
+</ul>
+<p>This project contains different files with different purpose:</p>
+<ul>
+<li><a href="https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/first_step__extraction_script.Rmd">first_step__extraction_script</a>:
+Contains scripts to download all data sets, extract and combine relevant
+csv files. The extractions scripts can easily be modify to download only
+data sets based on years. The scripts in this file should be the first
+to be ran</li>
+<li><a href="https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/second_step__Formating.Rmd">second_step__Formating</a>:
+To be ran at the after first_step__extraction_script, it contains
+scripts to consolidate the format of data sets (date-time), rename
+columns or combine all data sets into only 2</li>
+<li><a href="https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/third_step__Cleaning.Rmd">third_step__Cleaning</a>:
+This contains scripts for cleaning the previous 2 data sets and combine
+them into one.</li>
+<li><a href="https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/fourth_step__analysis.Rmd">fourth_step__analysis</a>:
+This file contains scripts for all the analysis related to to case
+study</li>
+</ul>
+</div>
 <div id="key-findings" class="section level2">
 <h2><strong>Key Findings</strong></h2>
-<pre><code>* Casual and member customers have approximately the same number of rides on weekends (Saturday and Sunday) but member customers initiate up to two times more rides than casual on working days
-* Rides initiated by casual customers tend to last much longer (more than 1 to 2 times longer on average) than rides initiated by member customers
-* The difference discovered in the duration of rides of cusual and member customers was tested and found significant with more than 99.99% of confidence
-* The Streeter Dr &amp; Grand Ave&#39; station is mostly used by casual customers as starting location while the Linton St &amp; Washington Blvd&#39; station is mostly used by member customers
-* Classic bikes are the most frequently used bikes by both customers but they all use docked bikes for longer rides
-* Casual customers use classic bikes more often than member customers 
-* Member customers use electric bikes more often than casual customers</code></pre>
+<ul>
+<li>Casual and member customers have approximately the same number of
+rides on weekends (Saturday and Sunday) but member customers initiate up
+to two times more rides than casual on working days</li>
+<li>Rides initiated by casual customers tend to last much longer (more
+than 1 to 2 times longer on average) than rides initiated by member
+customers</li>
+<li>The difference discovered in the duration of rides of cusual and
+member customers was tested and found significant with more than 99.99%
+of confidence</li>
+<li>The Streeter Dr &amp; Grand Ave’ station is mostly used by casual
+customers as starting location while the Linton St &amp; Washington
+Blvd’ station is mostly used by member customers</li>
+<li>Classic bikes are the most frequently used bikes by both customers
+but they all use docked bikes for longer rides</li>
+<li>Casual customers use classic bikes more often than member
+customers</li>
+<li>Member customers use electric bikes more often than casual
+customers</li>
+</ul>
 </div>
 <div id="recommendations-for-an-effective-marketing-strategy" class="section level2">
 <h2><strong>Recommendations for an effective marketing
@@ -449,7 +505,7 @@ and encourage them to use the service more often. This can help to
 increase their loyalty to the service and encourage casual riders to
 convert to annual members.</p></li>
 </ul>
-<p>Find the full report <a href="main.Rmd">here</a></p>
+<p>Find the full report <a href="main.Rmd">here</a>.</p>
 </div>
 </div>
 

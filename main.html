@@ -442,6 +442,14 @@ study</li>
 </div>
 <div id="summary-of-analysis" class="section level3">
 <h3>3. Summary of analysis</h3>
+<p><strong>Key Findings</strong></p>
+<pre><code>* Casual and member customers have approximately the same number of rides on weekends (Saturday and Sunday) but member customers initiate up to two times more rides than casual on working days
+* Rides initiated by casual customers tend to last much longer (more than 1 to 2 times longer on average) than rides initiated by member customers
+* The difference discovered in the duration of rides of cusual and member customers was tested and found significant with more than 99.99% of confidence
+* The Streeter Dr &amp; Grand Ave&#39; station is mostly used by casual customers as starting location while the Linton St &amp; Washington Blvd&#39; station is mostly used by member customers
+* Classic bikes are the most frequently used bikes by both customers but they all use docked bikes for longer rides
+* Casual customers use classic bikes more often than member customers 
+* Member customers use electric bikes more often than casual customers</code></pre>
 <div id="in-general" class="section level4">
 <h4>1. In general</h4>
 <p>Comment: After removing the outliers it appears that ‘member’
@@ -578,7 +586,7 @@ are not statistically different</td>
 </tbody>
 </table>
 <p>We’ve decided to run a T-Test (Student test) to compare the average
-trip duration of casual and member customers</p>
+trip duration of casual and member customers.</p>
 <p>First, we ran a homogeneity of variance test to check if the
 variances of the data were not statistically different in both groups.
 The result was not in our favor, and we had to reject the null
@@ -596,20 +604,20 @@ of customers. However, it was crucial to note that the assumptions for
 the T-Test were violated, therefore alternative tests are needed to add
 credit to this conclusion.</p>
 <p>Finally, we decided to go for a non-parametric test (no assumptions
-are not required) called Wilcoxon, which tests the equality of medians.
-The result was in our favor as we had to reject the null hypothesis with
-more than 99.99% confidence. Thus, we concluded that the difference in
-the duration of trips between casual and member customers was
-statistically significant, regardless of the type of test used.</p>
+are required) called the Wilcoxon rank-sum, which tests the equality of
+medians. The result was in our favor as we had to reject the null
+hypothesis with more than 99.99% confidence. Thus, we concluded that the
+difference in the duration of trips between casual and member customers
+was statistically significant, regardless of the type of test used.</p>
 </div>
 <div id="top-5-starting-stations-by-customers-type-members-vs-casual-users" class="section level4">
 <h4>6. Top 5 starting stations by customers type (members vs casual
 users)</h4>
 <p>There is a clear difference between casual and member customers in
 terms of starting station. Most casual riders start their trips at the
-‘Streeter Dr &amp; Grand Ave’ station (457,718 trips), with more than 2
+Streeter Dr &amp; Grand Ave’ station (457,718 trips), with more than 2
 times the number of started rides by member customers (124,443 trips).
-In the other hand member customers mostly go to the ‘Clinton St &amp;
+In the other hand member customers mostly go to the Clinton St &amp;
 Washington Blvd’ station to pick up a bike for their trip. However their
 number of rides (278,769 trips) less differ from the one of casual
 customers as it is just 0.92 times higher than the number of rides of
@@ -628,8 +636,8 @@ for designing marketing strategies aimed at converting casual riders
 into annual members:</p>
 <ul>
 <li><p><strong>1. Offer promotions and discounts for annual memberships
-during weekdays</strong>: When member customers tend to use the bikes
-more often. This can encourage casual riders to become members and take
+during weekdays</strong>: Member customers tend to use the bikes more
+often. This can encourage casual riders to become members and take
 advantage of the benefits of more frequent rides during
 weekdays.</p></li>
 <li><p><strong>2. Promote the benefits of annual membership for weekend
@@ -652,30 +660,17 @@ encourage casual riders to become more adventurous and potentially
 become annual members.</p></li>
 <li><p><strong>5. Highlight the cost savings of annual memberships for
 frequent riders</strong>: The analysis shows that casual riders tend to
-use bikes for longer durations than annual members. Promoting the cost
-savings of an annual membership for frequent riders can encourage casual
-riders to become members and take advantage of the cost savings for
-longer trips.</p></li>
-<li><p><strong>6. Focus marketing efforts on promoting the benefits of
-using bikes from different starting stations</strong>: Since casual
-customers tend to use a specific starting station much more often,
-marketing campaigns should focus on the benefits of exploring different
-areas and using bikes from different starting stations. This can
-encourage casual riders to become more adventurous and potentially
-become annual members.</p></li>
-<li><p><strong>7. Highlight the cost savings of annual memberships for
-frequent riders</strong>: The analysis shows that casual riders tend to
 use bikes for longer duration than annual members. Promoting the cost
 savings of an annual membership for frequent riders can encourage casual
 riders to become members and take advantage of the cost savings for
 longer trips.</p></li>
-<li><p><strong>8. Offer membership trial periods</strong>: The company
+<li><p><strong>6. Offer membership trial periods</strong>: The company
 can offer casual riders the chance to try out the annual membership for
 a certain period of time (e.g. a week or a month) to see if they would
 benefit from the service. This can help to increase the number of annual
 members by giving casual riders a chance to experience the benefits of
 an annual membership without committing to it fully.</p></li>
-<li><p><strong>9. Create a community for annual members</strong>: Since
+<li><p><strong>7. Create a community for annual members</strong>: Since
 annual members tend to be more frequent users of the service, the
 company can create a community for them to promote social interaction
 and encourage them to use the service more often. This can help to
@@ -683,13 +678,17 @@ increase their loyalty to the service and encourage casual riders to
 convert to annual members.</p></li>
 </ul>
 </div>
-<div id="act" class="section level3">
-<h3>Act</h3>
-<p>Guiding questions #### What is your final conclusion based on your
-analysis? #### How could your team and business apply your insights?
-#### What next steps would you or your stakeholders take based on your
-findings? #### Is there additional data you could use to expand on your
-findings?</p>
+<div id="for-further-analysis" class="section level3">
+<h3>5. For further analysis</h3>
+<p>Further data collection analysis can be conducted in order to have a
+better understanding of the customers and increase annual subscription
+while providing a better service to customers:</p>
+<ul>
+<li>Conduct a quick survey to understand more the reason to of choosing
+(or not) annual subscription and what they use the bikes for.</li>
+<li>Conduct a neighborhood analysis around different stations as well as
+between start and end stations?</li>
+</ul>
 </div>
 </div>
 </div>

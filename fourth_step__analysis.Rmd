@@ -165,7 +165,7 @@ df_to_export <-
             )
 df_to_export
 # export
-df_to_export_name = "basics_stats_of_ride_length__Compare_members_and_casual_users.csv"
+df_to_export_name = "basics_stats_of_ride_length__members_vs_casual_customers.csv"
 # write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
 print("Data exported.")
 ```
@@ -193,7 +193,7 @@ df %>% filter(ride_length >= lower_bound & ride_length <= upper_bound) %>%
   labs(fill = "Customers", 
        title = "Ride Duration by Customer Type (Casual vs. Member)",
        subtitle = "Jan 2015 to Mar 2023 (outliers were removed based on quantiles)",
-       caption = "Trips initiated by casual customers tend to take much more time than the ones initiated by customers with annual subscription.",
+       caption = "",
   ) + 
   theme(plot.title = element_text(hjust = 0, size = title_size),
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
@@ -1157,7 +1157,73 @@ In terms of trip duration, no matter which type of bike is considered, casual cu
 Electric bikes are used for shorter trips by both casual and member customers, which could be attributed to the battery life, even though most electric bikes can still be used as classic bikes with low battery power. Further analysis could be done to investigate the reason behind this difference in duration among bike types.
 
 ```{r}
-str_to_title("abc de")
+df %>%
+  group_by(member_casual, month) %>%
+  summarise(number_of_rides = n(),
+            average_duration = mean(ride_length)
+            ) %>% 
+  arrange(member_casual, month) %>% 
+  pivot_wider(id_cols = month, names_from = member_casual, values_from = average_duration) %>% 
+  mutate(average_duration_casual_relative_member = (casual - member) / member)
+```
+Comment: The average time spent for monthly trips by casual customers is more than the double of the average time spent by member customers.
+
+```{r}
+p1 <- df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(member_casual, rideable_type) %>%
+  summarise(number_of_rides = n()) %>%
+  mutate(rideable_type = str_to_title(gsub("_", " ", rideable_type))) %>% 
+  arrange(member_casual, desc(number_of_rides)) %>% 
+  ggplot(aes(x = rideable_type, y = number_of_rides, fill = member_casual)) +
+  geom_col(position = "dodge") +
+  xlab("") + ylab("Number of Rides") + 
+  labs(fill = "", 
+       title = "Number of Rides by Bike Type",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size),
+        legend.position = "none") + 
+  scale_fill_manual(values = casual_member_colors)
+
+# create the second plot
+p2 <- df %>%
+  filter(nchar(rideable_type) > 7) %>% 
+  group_by(member_casual, rideable_type) %>%
+  summarise(avg_rides_duration = mean(ride_length)) %>%
+  arrange(member_casual, desc(avg_rides_duration)) %>% 
+  mutate(rideable_type = str_to_title(gsub("_", " ", rideable_type))) %>% 
+  ggplot(aes(x = rideable_type, y = avg_rides_duration, fill = member_casual)) +
+  geom_col(position = "dodge") + 
+  xlab("") + ylab("Average Rides Duration (minutes)")  + 
+  labs(fill = "Customers", 
+       title = "Average Ride Duration by Bike Type",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size)) + 
+  scale_fill_manual(values = casual_member_colors)
+
+
+# combine the two plots and share the legend
+combined_plot <- grid.arrange(p1 + guides(color = guide_legend(title = "Customers")), 
+             p2 + guides(color = guide_legend(title = "Customers")), 
+             ncol = 2, widths = c(0.8, 1))
+
+# Save the plot as png image
+file_name = file.path('outputs', 'img', 'bar_plots__number_of_rides_and_duration_per_customer_by_bike_type.png')
+## ggsave save the last image produced
+ggsave(file_name,
+       combined_plot,
+       width=img_width,
+       height=img_height)
 ```
 
 

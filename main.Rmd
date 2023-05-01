@@ -9,8 +9,7 @@ output:
 ---
 
 # Case Study: How does a bike-share navigate speedy success?
-In this case study we will work for a fictional company, Cyclistic, a bike-share company in Chicago. For the director of marketing of the company’s, future success depends on maximizing the number of annual memberships. Therefore, rather than creating a marketing campaign that targets all-new customers, the director of marketing believes there is a
-very good chance to convert casual riders into members. 
+In this case study we will work for a fictional company, Cyclistic, a bike-share company in Chicago. For the director of marketing of the company’s, future success depends on maximizing the number of annual memberships. Therefore, rather than creating a marketing campaign that targets all-new customers, the director of marketing believes there is a very good chance to convert casual riders into members. 
 
 Source: [Link](https://d3c33hcgiwev3.cloudfront.net/aacF81H_TsWnBfNR_x7FIg_36299b28fa0c4a5aba836111daad12f1_DAC8-Case-Study-1.pdf?Expires=1681084800&Signature=WgKO~-LpPUMKTGb95H3tFbjTpbRvtu1nqBpjLACnTFrK6jBlggPYFa4lDd6jERYrYmrs7kP~4W~AJU4a3TgXhrp8XFq2c5L5gXwSIcBZNrDDKEeT1ZPXQzSUUGbFtvzy5iz-TyEvMJ-2ETjsA-oDex859GY-Ztjr8EitozVmK2w_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A)
 
@@ -66,11 +65,14 @@ This project contains different files with different purpose:
     
 #### 1. In general
 
-Comment: After removing the outliers it appears that 'member' subscription type of customers tend to use the bikes for shorter trips compared to the 'casual' customers. Let's assess the strength of this hypothesis throught a statistical test.
+Comment: After removing the outliers it appears that 'member' subscription type of customers tend to use the bikes for shorter trips compared to the 'casual' customers. Let's assess the strength of this hypothesis through a statistical test.
 
 ```{r fig1, echo=FALSE, fig.cap="Caption for the figure", out.width = "100%", fig.show='hold'}
 knitr::include_graphics(file.path("outputs", "img", "box_plots__ride_duration_by_customer_type.png"))
 ```
+
+Descriptive analysis table:
+
 
 #### 2. Annual
 Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
@@ -135,6 +137,10 @@ knitr::include_graphics(c(file.path("outputs", "img", "bar_chart__number_of_ride
 #### 7. Bikes preference by customers type
 
 number of rides and duration per bikes type and customers
+
+```{r fig6, echo=FALSE, fig.cap="", out.width = "100%"}
+knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__number_of_rides_and_duration_per_customer_by_bike_type.png")))
+```
 
 ### 4. Recommendations for an effective marketing strategy
 Based on the results of the analysis, here are nine recommendations for designing marketing strategies aimed at converting casual riders into annual members:

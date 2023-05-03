@@ -16,7 +16,7 @@ In order to help the company design a new marketing strategy to convert casual r
 
 This case study will focus on the first question.
 
-## How do annual members and casual riders use Cyclistic bikes differently?
+## Business objective
 The objective is to analyze and compare the usage habits of annual members and casual riders of Cyclistic bicycles in order to identify differences in their behavior and preferences. The goal is to gain insights that can be used to design effective marketing strategies to convert casual cyclists into annual members. By understanding the key factors that influence user behavior and preferences, Cyclistic can tailor its marketing efforts to better meet the needs of casual cyclists and encourage them to become long-term loyal customers.
 
 ## Data

@@ -36,7 +36,7 @@ There are several csv files containing trips data ([seen list sata sets here](ht
 * usertype: "Customer" is a rider who purchased a 24-Hour Pass; "Subscriber" is a rider who purchased an Annual Membership
 * gender: gender of rider 
 
-## Scripts in this project
+## Scripts
 This project contains different files with different purpose:
 
 * [first_step__extraction_script](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/first_step__extraction_script.Rmd): Contains scripts to download all data sets, extract and combine relevant csv files. The extractions scripts can easily be modify to download only data sets based on years. The scripts in this file should be the first to be ran

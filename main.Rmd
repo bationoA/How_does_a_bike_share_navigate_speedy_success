@@ -21,13 +21,11 @@ In order to help the company design a new marketing strategy to convert casual r
 
 This case study will focus on the first question.
 
-## How do annual members and casual riders use Cyclistic bikes differently?
-
-### 1. Business task
+## 1. Business task
 The objective is to analyze and compare the usage habits of annual members and casual riders of Cyclistic bicycles in order to identify differences in their behavior and preferences. The goal is to gain insights that can be used to design effective marketing strategies to convert casual cyclists into annual members. By understanding the key factors that influence user behavior and preferences, Cyclistic can tailor its marketing efforts to better meet the needs of casual cyclists and encourage them to become long-term loyal customers.
 
 
-### 2. Description of data sources
+## 2. Description of data sources
 The data used in this study are Cyclistic’s historical trip data. The initial case study suggests to get only the previous 12 months trips data but we will consider all data (from January 2015 to March 2023). This could give more insights regarding changes over years.
 
 There are several csv files containing trips data ([seen list sata sets here](https://divvy-tripdata.s3.amazonaws.com/index.html)). The name of variables are not consistent across all data sets but they contain similar information. The information that can be found in these data sets are:
@@ -44,37 +42,34 @@ There are several csv files containing trips data ([seen list sata sets here](ht
 * usertype: "Customer" is a rider who purchased a 24-Hour Pass; "Subscriber" is a rider who purchased an Annual Membership
 * gender: gender of rider 
 
-This project contains different files with different purpose:
+## 3. Summary of analysis
+__Key Findings__
 
-* [first_step__extraction_script](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/first_step__extraction_script.Rmd): Contains scripts to download all data sets, extract and combine relevant csv files. The extractions scripts can easily be modify to download only data sets based on years. The scripts in this file should be the first to be ran
-* [second_step__Formating](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/second_step__Formating.Rmd): To be ran at the after first_step__extraction_script, it contains scripts to consolidate the format of data sets (date-time), rename columns or combine all data sets into only 2
-* [third_step__Cleaning](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/third_step__Cleaning.Rmd): This contains scripts for cleaning the previous 2 data sets and combine them into one. 
-* [fourth_step__analysis](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/fourth_step__analysis.Rmd): This file contains scripts for all the analysis related to to case study
-
-
-### 3. Summary of analysis
-  __Key Findings__
-  
-    * Casual and member customers have approximately the same number of rides on weekends (Saturday and Sunday) but member customers initiate up to two times more rides than casual on working days
-    * Rides initiated by casual customers tend to last much longer (more than 1 to 2 times longer on average) than rides initiated by member customers
-    * The difference discovered in the duration of rides of cusual and member customers was tested and found significant with more than 99.99% of confidence
-    * The Streeter Dr & Grand Ave' station is mostly used by casual customers as starting location while the Linton St & Washington Blvd' station is mostly used by member customers
-    * Classic bikes are the most frequently used bikes by both customers but they all use docked bikes for longer rides
-    * Casual customers use classic bikes more often than member customers 
-    * Member customers use electric bikes more often than casual customers
+* Casual and member customers have approximately the same number of rides on weekends (Saturday and Sunday) but member customers initiate up to two times more rides than casual on working days
+* Rides initiated by casual customers tend to last much longer (more than 1 to 2 times longer on average) than rides initiated by member customers
+* The difference discovered in the duration of rides of cusual and member customers was tested and found significant with more than 99.99% of confidence
+* The Streeter Dr & Grand Ave' station is mostly used by casual customers as starting location while the Linton St & Washington Blvd' station is mostly used by member customers
+* Classic bikes are the most frequently used bikes by both customers but they all use docked bikes for longer rides
+* Casual customers use classic bikes more often than member customers 
+* Member customers use electric bikes more often than casual customers
     
-#### 1. In general
+### 1. In general
+
+Comment: The descriptive statistics for ride lengths in our dataset are presented in the table above, broken down by membership type: casual and member. The average ride time for casual riders was 40.03 minutes, which is more than double the average ride length for members, which was 15.35 minutes. However, it's worth noting that the average ride time for casual riders was just 21 minutes, while it was 11 minutes for members. This implies that, while the dataset contains some very lengthy casual rides, the vast majority of trips are far shorter. 
+
+The longest ride length for casual bikers was 238,940 minutes, which is more than 165 days! The longest ride length for members was 225,960 minutes, which is also a very long time. The minimum riding time for both groups was 5 minutes, indicating that some rides may have been cut short for various reasons. Overall, these statistics indicate that our dataset has a wide variety of ride lengths, with some being quite short and others being exceedingly long. These information might help uncover trends and patterns in ride length, which could help drive decision-making in areas like route design and pricing strategies.
+
 
 Comment: After removing the outliers it appears that 'member' subscription type of customers tend to use the bikes for shorter trips compared to the 'casual' customers. Let's assess the strength of this hypothesis through a statistical test.
 
-```{r fig1, echo=FALSE, fig.cap="Caption for the figure", out.width = "100%", fig.show='hold'}
+```{r fig1, echo=FALSE, fig.cap="", out.width = "100%", fig.show='hold'}
 knitr::include_graphics(file.path("outputs", "img", "box_plots__ride_duration_by_customer_type.png"))
 ```
 
 Descriptive analysis table:
 
 
-#### 2. Annual
+### 2. Annual
 Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
 
 From 2015 to March 2023, the average trip duration for 'member' customers does not show significant variation compared to 'casual' customers. However, 'casual' customers consistently use the bikes for much longer trips than 'member' customers, with trip duration ranging from 53% to 73% longer. This finding could suggest that casual customers may use the bikes for leisure or recreational purposes, while members may use them for more utilitarian purposes such as commuting. It also raises questions about the pricing structure and value proposition for casual customers, who may be paying more per trip compared to members but may not be utilizing the service as frequently. Further analysis of customer behavior and preferences could provide insights into potential strategies for increasing casual customer engagement and loyalty.
@@ -83,7 +78,7 @@ From 2015 to March 2023, the average trip duration for 'member' customers does n
 knitr::include_graphics(c(file.path("outputs", "img", "line_plots__average_number_of_rides_and_duration_per_customer_by_year.png")))
 ```
 
-#### 3. Monthly
+### 3. Monthly
 
 Comment: The number of bike rides for each type of customer appears to be normally distributed over the months. However, there is a clear trend that annual subscribers ('member') have been taking more bike trips per month compared to casual customers since 2015.
 
@@ -95,7 +90,7 @@ Comment: The average time spent for monthly trips by casual customers is more th
 knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number_of_rides_and_duration_per_customer_by_month.png")))
 ```
 
-#### 4. Daily
+### 4. Daily
 
 Comment: Casual and member customers tend to use bikes at the same rate during weekends (Saturday and Sunday). However, during working days, member customers use the bikes 1 to 2 times more frequently than casual customer.
 
@@ -107,7 +102,7 @@ Comment: The average time spent for daily trips by casual customers is more than
 knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number_of_rides_and_duration_per_customer_by_day.png")))
 ```
 
-#### 5. Testing the difference of trips duration between casual and member customers
+### 5. Testing the difference of trips duration between casual and member customers
 From the above analysis it appeared that a clear difference exists between casual and member customers when it comes to the duration of their rides. In this section we'll use statistical tests to evaluate the significance of this difference. The tests will be on central trends such as means or medians.
 
 The question we're trying to answer here is: Is there a significant difference in the duration of the trips between the two categories of customers (casual and member)? The results of different tests conducted are summarized in the bellow table.
@@ -126,7 +121,7 @@ Despite the violated assumptions, we decided to conduct a T-Test, which resulted
 
 Finally, we decided to go for a non-parametric test (no assumptions are required) called the Wilcoxon rank-sum, which tests the equality of medians. The result was in our favor as we had to reject the null hypothesis with more than 99.99% confidence. Thus, we concluded that the difference in the duration of trips between casual and member customers was statistically significant, regardless of the type of test used.
 
-#### 6. Top 5 starting stations by customers type (members vs casual users)
+### 6. Top 5 starting stations by customers type (members vs casual users)
 
 There is a clear difference between casual and member customers in terms of starting station. Most casual riders start their trips at the Streeter Dr & Grand Ave' station (457,718 trips), with more than 2 times the number of started rides by member customers (124,443 trips). In the other hand member customers mostly go to the Clinton St & Washington Blvd' station to pick up a bike for their trip. However their number of rides (278,769 trips) less differ from the one of casual customers as it is just 0.92 times higher than the number of rides of casual customers.
 
@@ -134,15 +129,23 @@ There is a clear difference between casual and member customers in terms of star
 knitr::include_graphics(c(file.path("outputs", "img", "bar_chart__number_of_rides_per_customer_by_top_5_start_station.png")))
 ```
 
-#### 7. Bikes preference by customers type
+### 7. Bikes preference by customers type
 
-number of rides and duration per bikes type and customers
+Comment: The most frequently used bikes among all customers are classic bikes, accounting for approximately 44.59% of all trips. Since 2020, customers with annual subscriptions have been using classic bikes more frequently, making up 60.78% of all trips. The use of docked bikes is quite similar for both customer types, with casual riders accounting for 50.46% of trips made with these bikes.
+
+One finding is that there is a difference in the preferred bike type between casual riders and customers with annual subscription. Casual riders tend to use docked bikes more frequently than electric bikes, while customers with annual subscription tend to use electric bikes more frequently than docked bikes even if both tend to use classic bikes much more often than the others type of bikes.
+
+More analysis is needed in order to determine if is really a matter of preference of availability.
+
+In terms of trip duration, no matter which type of bike is considered, casual customers tend to use them much longer during each ride than customers with annual subscriptions. Indeed, casual riders use docked bikes at least two times longer than member customers (67 versus 18 minutes) , while classic and electric bikes have average trip duration of 31 and 20 minutes, respectively.
+
+Electric bikes are used for shorter trips by both casual and member customers, which could be attributed to the battery life, even though most electric bikes can still be used as classic bikes with low battery power. Further analysis could be done to investigate the reason behind this difference in duration among bike types.
 
 ```{r fig6, echo=FALSE, fig.cap="", out.width = "100%"}
 knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__number_of_rides_and_duration_per_customer_by_bike_type.png")))
 ```
 
-### 4. Recommendations for an effective marketing strategy
+## 4. Recommendations for an effective marketing strategy
 Based on the results of the analysis, here are nine recommendations for designing marketing strategies aimed at converting casual riders into annual members:
 
 * __1. Offer promotions and discounts for annual memberships during weekdays__: 
@@ -167,7 +170,7 @@ The company can offer casual riders the chance to try out the annual membership 
 Since annual members tend to be more frequent users of the service, the company can create a community for them to promote social interaction and encourage them to use the service more often. This can help to increase their loyalty to the service and encourage casual riders to convert to annual members.
 
 
-### 5. For further analysis
+## 5. For further analysis
 Further data collection analysis can be conducted in order to have a better understanding of the customers and increase annual subscription while providing a better service to customers: 
 
 * Conduct a quick survey to understand more the reason to of choosing (or not) annual subscription and what they use the bikes for.

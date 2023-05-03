@@ -992,15 +992,41 @@ df_to_export_name = "ridership_data_by_subscription_type_and_top_5_end_station_n
 print("Data exported.")
 ```
 
+
+```{r}
+df %>%
+  group_by(member_casual, end_station_name) %>%
+  summarise(number_of_rides = n()) %>%
+  filter(!is.na(end_station_name)) %>% 
+  top_n(5) %>% 
+  group_by(member_casual) %>%
+  arrange(desc(number_of_rides)) %>%
+  ggplot(aes(x = end_station_name, y = number_of_rides, fill = member_casual)) +
+  geom_col(position = "dodge")+
+  xlab("End Station") + ylab("Number of Rides") +
+  labs(fill = "Customers", 
+       title = "Top 5 End Stations  per Customer Type",
+       subtitle = "",
+       caption = "",
+  ) + 
+  theme(plot.title = element_text(hjust = 0, size = title_size),
+        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
+        plot.caption = element_text(hjust = 0, size = caption_size),
+        axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  scale_fill_manual(values = casual_member_colors)
+```
+
+
+
 ### Visualize for number_of_rides
 ```{r}
 df %>%
   group_by(member_casual, end_station_name) %>%
   summarise(number_of_rides = n()) %>%
-  arrange(member_casual, desc(number_of_rides)) %>%
   group_by(member_casual) %>%
   filter(!is.na(end_station_name)) %>% 
   top_n(5) %>% 
+  # arrange(member_casual, desc(number_of_rides)) %>%
   ggplot(aes(x = end_station_name, y = number_of_rides, fill = member_casual)) +
   geom_col(position = "dodge")+
   xlab("End Station") + ylab("Number of Rides") +

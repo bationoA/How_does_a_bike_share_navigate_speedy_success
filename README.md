@@ -36,6 +36,7 @@ There are several csv files containing trips data ([seen list sata sets here](ht
 * usertype: "Customer" is a rider who purchased a 24-Hour Pass; "Subscriber" is a rider who purchased an Annual Membership
 * gender: gender of rider 
 
+## Scripts in this project
 This project contains different files with different purpose:
 
 * [first_step__extraction_script](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/first_step__extraction_script.Rmd): Contains scripts to download all data sets, extract and combine relevant csv files. The extractions scripts can easily be modify to download only data sets based on years. The scripts in this file should be the first to be ran
@@ -44,7 +45,7 @@ This project contains different files with different purpose:
 * [fourth_step__analysis](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/fourth_step__analysis.Rmd): This file contains scripts for all the analysis related to to case study
 
 
-## __Key Findings__
+## Key Findings
   
 * Casual and member customers have approximately the same number of rides on weekends (Saturday and Sunday) but member customers initiate up to two times more rides than casual on working days
 * Rides initiated by casual customers tend to last much longer (more than 1 to 2 times longer on average) than rides initiated by member customers
@@ -54,7 +55,7 @@ This project contains different files with different purpose:
 * Casual customers use classic bikes more often than member customers 
 * Member customers use electric bikes more often than casual customers
     
-## __Recommendations for an effective marketing strategy__
+## Recommendations for an effective marketing strategy
 Based on the results of the analysis, here are nine recommendations for designing marketing strategies aimed at converting casual riders into annual members:
 
 * __1. Offer promotions and discounts for annual memberships during weekdays__: 

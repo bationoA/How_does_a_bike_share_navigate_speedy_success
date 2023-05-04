@@ -39,14 +39,13 @@ There are several csv files containing trips data ([seen list sata sets here](ht
 ## Scripts
 This project contains different files with different purpose:
 
-* [first_step__extraction_script](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/first_step__extraction_script.Rmd): Contains scripts to download all data sets, extract and combine relevant csv files. The extractions scripts can easily be modify to download only data sets based on years. The scripts in this file should be the first to be ran
-* [second_step__Formating](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/second_step__Formating.Rmd): To be ran at the after first_step__extraction_script, it contains scripts to consolidate the format of data sets (date-time), rename columns or combine all data sets into only 2
-* [third_step__Cleaning](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/third_step__Cleaning.Rmd): This contains scripts for cleaning the previous 2 data sets and combine them into one. 
-* [fourth_step__analysis](https://github.com/bationoA/How_does_a_bike_share_navigate_speedy_success/blob/main/fourth_step__analysis.Rmd): This file contains scripts for all the analysis related to to case study
+* [first_step__extraction_script](first_step__extraction_script.Rmd): Contains scripts to download all data sets, extract and combine relevant csv files. The extractions scripts can easily be modify to download only data sets based on years. The scripts in this file should be the first to be ran
+* [second_step__Formating](second_step__Formating.Rmd): To be ran at the after first_step__extraction_script, it contains scripts to consolidate the format of data sets (date-time), rename columns or combine all data sets into only 2
+* [third_step__Cleaning](third_step__Cleaning.Rmd): This contains scripts for cleaning the previous 2 data sets and combine them into one. 
+* [fourth_step__analysis](fourth_step__analysis.Rmd): This file contains scripts for all the analysis related to to case study
 
 
 ## Key Findings
-  
 * Casual and member customers have approximately the same number of rides on weekends (Saturday and Sunday) but member customers initiate up to two times more rides than casual on working days
 * Rides initiated by casual customers tend to last much longer (more than 1 to 2 times longer on average) than rides initiated by member customers
 * The difference discovered in the duration of rides of cusual and member customers was tested and found significant with more than 99.99% of confidence
@@ -81,4 +80,4 @@ Since annual members tend to be more frequent users of the service, the company 
 
 
 
-Find the full report [here](main.Rmd).
+Find the full report [here](report.pdf). Note that pagination have not be handled in this pdf file.

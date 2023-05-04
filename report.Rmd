@@ -8,6 +8,10 @@ output:
   fig_caption: yes
 ---
 
+```{r}
+sessionInfo()
+```
+
 
 # Case Study: How does a bike-share navigate speedy success?
 In this case study we will work for a fictional company, Cyclistic, a bike-share company in Chicago. For the director of marketing of the company’s, future success depends on maximizing the number of annual memberships. Therefore, rather than creating a marketing campaign that targets all-new customers, the director of marketing believes there is a very good chance to convert casual riders into members. 

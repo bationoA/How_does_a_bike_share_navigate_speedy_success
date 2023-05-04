@@ -19,6 +19,9 @@ This case study will focus on the first question.
 ## Business objective
 The objective is to analyze and compare the usage habits of annual members and casual riders of Cyclistic bicycles in order to identify differences in their behavior and preferences. The goal is to gain insights that can be used to design effective marketing strategies to convert casual cyclists into annual members. By understanding the key factors that influence user behavior and preferences, Cyclistic can tailor its marketing efforts to better meet the needs of casual cyclists and encourage them to become long-term loyal customers.
 
+## Requirements
+Refer to session info [here](session_info.txt)
+
 ## Data
 The data used in this study are Cyclistic’s historical trip data. The initial case study suggests to get only the previous 12 months trips data but we will consider all data (from January 2015 to March 2023). This could give more insights regarding changes over years.
 

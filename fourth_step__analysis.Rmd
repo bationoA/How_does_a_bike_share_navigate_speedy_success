@@ -923,7 +923,8 @@ df %>%
   group_by(member_casual) %>%
   top_n(5) %>% 
   mutate(percent = round(100 * (number_of_rides / nrow(df)), 2)) %>% 
-  ggplot(aes(x = start_station_name, y = percent, fill = member_casual)) +
+  mutate(rank = rank(-percent)) %>% 
+  ggplot(aes(x = fct_reorder(start_station_name, rank), y = percent, fill = member_casual)) +
   geom_col(position = "dodge") + 
   xlab("Start Station") + ylab("Number of Rides") +
   labs(fill = "Customers", 
@@ -993,41 +994,17 @@ print("Data exported.")
 ```
 
 
-```{r}
-df %>%
-  group_by(member_casual, end_station_name) %>%
-  summarise(number_of_rides = n()) %>%
-  filter(!is.na(end_station_name)) %>% 
-  top_n(5) %>% 
-  group_by(member_casual) %>%
-  arrange(desc(number_of_rides)) %>%
-  ggplot(aes(x = end_station_name, y = number_of_rides, fill = member_casual)) +
-  geom_col(position = "dodge")+
-  xlab("End Station") + ylab("Number of Rides") +
-  labs(fill = "Customers", 
-       title = "Top 5 End Stations  per Customer Type",
-       subtitle = "",
-       caption = "",
-  ) + 
-  theme(plot.title = element_text(hjust = 0, size = title_size),
-        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size),
-        axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  scale_fill_manual(values = casual_member_colors)
-```
-
-
-
 ### Visualize for number_of_rides
 ```{r}
+library(stringr)
+library(ggtext)
 df %>%
   group_by(member_casual, end_station_name) %>%
   summarise(number_of_rides = n()) %>%
-  group_by(member_casual) %>%
   filter(!is.na(end_station_name)) %>% 
   top_n(5) %>% 
-  # arrange(member_casual, desc(number_of_rides)) %>%
-  ggplot(aes(x = end_station_name, y = number_of_rides, fill = member_casual)) +
+  mutate(rank = rank(-number_of_rides)) %>% 
+  ggplot(aes(x = fct_reorder(end_station_name, rank), y = number_of_rides, fill = member_casual)) +
   geom_col(position = "dodge")+
   xlab("End Station") + ylab("Number of Rides") +
   labs(fill = "Customers", 
@@ -1035,11 +1012,12 @@ df %>%
        subtitle = "",
        caption = "",
   ) + 
-  theme(plot.title = element_text(hjust = 0, size = title_size),
-        plot.subtitle = element_text(hjust = 0, size = subtitle_size),
-        plot.caption = element_text(hjust = 0, size = caption_size),
-        axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  scale_fill_manual(values = casual_member_colors)
+  theme(plot.title = ggtext::element_markdown(hjust = 0, size = title_size, margin = margin(b = 10)),
+        plot.subtitle = ggtext::element_markdown(hjust = 0, size = subtitle_size, margin = margin(b = 10)),
+        plot.caption = ggtext::element_markdown(hjust = 0, size = caption_size, margin = margin(t = 10)),
+        axis.text.x = ggtext::element_markdown(angle = 45, hjust = 1, vjust = 1, margin = margin(t = 5, r = 5), 
+                                                wrap = unit(20, "line"))) + 
+ scale_fill_manual(values = casual_member_colors)
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_chart__number_of_rides_per_customer_by_top_5_end_station.png')

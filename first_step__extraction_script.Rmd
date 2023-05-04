@@ -10,6 +10,7 @@ install.packages("tidyverse")
 install.packages("lubridate") # Manipulate date attributes
 install.packages("httr")
 install.packages("rvest")
+tinytex::install_tinytex()
 ```
 
 ```{r load packages}

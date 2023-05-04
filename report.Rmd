@@ -3,10 +3,11 @@ title: "main"
 author: "bationoA"
 date: "2023-04-08"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
   fig_caption: yes
 ---
+
 
 # Case Study: How does a bike-share navigate speedy success?
 In this case study we will work for a fictional company, Cyclistic, a bike-share company in Chicago. For the director of marketing of the company’s, future success depends on maximizing the number of annual memberships. Therefore, rather than creating a marketing campaign that targets all-new customers, the director of marketing believes there is a very good chance to convert casual riders into members. 
@@ -103,6 +104,8 @@ knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number
 ```
 
 ### 5. Testing the difference of trips duration between casual and member customers
+    The difference in the duration of trips between casual and member customers is statistically significant with 99.99% confidence.
+    
 From the above analysis it appeared that a clear difference exists between casual and member customers when it comes to the duration of their rides. In this section we'll use statistical tests to evaluate the significance of this difference. The tests will be on central trends such as means or medians.
 
 The question we're trying to answer here is: Is there a significant difference in the duration of the trips between the two categories of customers (casual and member)? The results of different tests conducted are summarized in the bellow table.

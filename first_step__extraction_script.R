@@ -2,6 +2,8 @@ install.packages("tidyverse")
 install.packages("lubridate") # Manipulate date attributes
 install.packages("httr")
 install.packages("rvest")
+install.packages('tinytex')
+
 
 library("tidyverse")
 library(httr)

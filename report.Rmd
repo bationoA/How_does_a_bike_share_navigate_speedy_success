@@ -16,9 +16,9 @@ Source: [Link](https://d3c33hcgiwev3.cloudfront.net/aacF81H_TsWnBfNR_x7FIg_36299
 
 In order to help the company design a new marketing strategy to convert casual riders into annual members, some questions need to be answered
 
-* 1. How do annual members and casual riders use Cyclistic bikes differently?
-* 2. Why would casual riders buy Cyclistic annual memberships?
-* 3. How can Cyclistic use digital media to influence casual riders to become members?
+1. How do annual members and casual riders use Cyclistic bikes differently?
+2. Why would casual riders buy Cyclistic annual memberships?
+3. How can Cyclistic use digital media to influence casual riders to become members?
 
 This case study will focus on the first question.
 
@@ -56,19 +56,15 @@ __Key Findings__
     
 ### 1. In general
 
-Comment: The descriptive statistics for ride lengths in our dataset are presented in the table above, broken down by membership type: casual and member. The average ride time for casual riders was 40.03 minutes, which is more than double the average ride length for members, which was 15.35 minutes. However, it's worth noting that the average ride time for casual riders was just 21 minutes, while it was 11 minutes for members. This implies that, while the dataset contains some very lengthy casual rides, the vast majority of trips are far shorter. 
+After the analysis, the average ride time for casual riders was found to be 40.03 minutes, which is more than double the average ride length for members, which was 15.35 minutes. However, we also observed that 50% of casual riders spend at least 21 minutes per trips, while 75% of annual subscribers spend a maximum of 18 minutes. This indicates that rides include some very lengthy casual rides, but the majority of the trips are significantly shorter.
 
-The longest ride length for casual bikers was 238,940 minutes, which is more than 165 days! The longest ride length for members was 225,960 minutes, which is also a very long time. The minimum riding time for both groups was 5 minutes, indicating that some rides may have been cut short for various reasons. Overall, these statistics indicate that our dataset has a wide variety of ride lengths, with some being quite short and others being exceedingly long. These information might help uncover trends and patterns in ride length, which could help drive decision-making in areas like route design and pricing strategies.
+Further, we observed that the longest ride length for casual bikers was 238,940 minutes, which is more than 165 days, while the longest ride length for members was 225,960 minutes (about 157 days), which is also a considerable duration. Both casual and member groups had riding times less than 5 minutes, suggesting that some rides were cut short for various reasons. These findings suggest that our dataset has a wide range of ride lengths, with some being very short and some being remarkably long.
 
-
-Comment: After removing the outliers it appears that 'member' subscription type of customers tend to use the bikes for shorter trips compared to the 'casual' customers. Let's assess the strength of this hypothesis through a statistical test.
+After removing the outliers from the dataset, we also observed from the below boxplot that the 'member' subscription type of customers tend to use the bikes for shorter trips compared to the 'casual' customers. However, we need to test this difference by conducting statistical tests.
 
 ```{r fig1, echo=FALSE, fig.cap="", out.width = "100%", fig.show='hold'}
 knitr::include_graphics(file.path("outputs", "img", "box_plots__ride_duration_by_customer_type.png"))
 ```
-
-Descriptive analysis table:
-
 
 ### 2. Annual
 Overall, the number of bike rides each year is decreasing. However, it is worth noting that consumers with yearly subscriptions ('members') regularly take more bike journeys than casual customers over the course of the study.
@@ -79,13 +75,13 @@ From 2015 to March 2023, the average trip duration for 'member' customers does n
 knitr::include_graphics(c(file.path("outputs", "img", "line_plots__average_number_of_rides_and_duration_per_customer_by_year.png")))
 ```
 
-### 3. Monthly
+### 3. Monthly 
 
-Comment: The number of bike rides for each type of customer appears to be normally distributed over the months. However, there is a clear trend that annual subscribers ('member') have been taking more bike trips per month compared to casual customers since 2015.
+According to the data, there appears to be a trend in the number of bike rides taken by customers over the months, with a normal distribution for both casual and annual subscribers ('member'). However, since 2015, there is a clear indication that annual subscribers have been taking more trips per month compared to casual customers.
 
-Comment: Based on the data, it appears that there is a significant difference in the average trip duration between casual customers and annual subscribers ('member') on a monthly basis. Despite a slight decrease in the average duration over time, casual customers consistently take longer bike trips compared to annual subscribers.
+Moreover, there is a significant difference in the average trip duration between the two types of customers on a monthly basis. While casual customers consistently take longer bike trips compared to annual subscribers, there has been a slight decrease in the average duration over time.
 
-Comment: The average time spent for monthly trips by casual customers is more than the double of the average time spent by member customers.
+To be precise, the average time spent on monthly trips by casual customers is more than double the average time spent by annual subscribers. These insights could be useful for our company to better understand the usage patterns of their customers and inform pricing strategies or marketing campaigns.
 
 ```{r fig3, echo=FALSE, fig.cap="", out.width = "100%"}
 knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number_of_rides_and_duration_per_customer_by_month.png")))
@@ -93,18 +89,17 @@ knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number
 
 ### 4. Daily
 
-Comment: Casual and member customers tend to use bikes at the same rate during weekends (Saturday and Sunday). However, during working days, member customers use the bikes 1 to 2 times more frequently than casual customer.
+From 2015 to March 2023, casual customers have been using the bikes for longer than member customers. However, it's worth noting that casual and member customers tend to use bikes at the same rate during weekends (Saturday and Sunday). But, during working days, member customers use the bikes one to two times more frequently than casual customers. 
 
-Comment: From 2015 to March 2023, casual customers have been using the bikes for longer than member customers
-
-Comment: The average time spent for daily trips by casual customers is more than the double of the average time spent by member customers.
+Despite this, the average time spent for daily trips by casual customers is more than double the average time spent by member customers. These findings suggest that there may be different usage patterns and needs for the two customer types, which could inform decisions around bike availability and pricing strategies.
 
 ```{r fig4, echo=FALSE, fig.cap="", out.width = "100%"}
 knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number_of_rides_and_duration_per_customer_by_day.png")))
 ```
 
 ### 5. Testing the difference of trips duration between casual and member customers
-    The difference in the duration of trips between casual and member customers is statistically significant with 99.99% confidence.
+    The difference in the duration of trips between casual and member customers 
+    is statistically significant with 99.99% confidence.
     
 From the above analysis it appeared that a clear difference exists between casual and member customers when it comes to the duration of their rides. In this section we'll use statistical tests to evaluate the significance of this difference. The tests will be on central trends such as means or medians.
 
@@ -133,8 +128,7 @@ knitr::include_graphics(c(file.path("outputs", "img", "bar_chart__number_of_ride
 ```
 
 ### 7. Bikes preference by customers type
-
-Comment: The most frequently used bikes among all customers are classic bikes, accounting for approximately 44.59% of all trips. Since 2020, customers with annual subscriptions have been using classic bikes more frequently, making up 60.78% of all trips. The use of docked bikes is quite similar for both customer types, with casual riders accounting for 50.46% of trips made with these bikes.
+The most frequently used bikes among all customers are classic bikes, accounting for approximately 44.59% of all trips. Since 2020, customers with annual subscriptions have been using classic bikes more frequently, making up 60.78% of all trips. The use of docked bikes is quite similar for both customer types, with casual riders accounting for 50.46% of trips made with these bikes.
 
 One finding is that there is a difference in the preferred bike type between casual riders and customers with annual subscription. Casual riders tend to use docked bikes more frequently than electric bikes, while customers with annual subscription tend to use electric bikes more frequently than docked bikes even if both tend to use classic bikes much more often than the others type of bikes.
 
@@ -151,25 +145,25 @@ knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__number_of_ride
 ## 4. Recommendations for an effective marketing strategy
 Based on the results of the analysis, here are nine recommendations for designing marketing strategies aimed at converting casual riders into annual members:
 
-* __1. Offer promotions and discounts for annual memberships during weekdays__: 
+* __Offer promotions and discounts for annual memberships during weekdays__: 
 Member customers tend to use the bikes more often. This can encourage casual riders to become members and take advantage of the benefits of more frequent rides during weekdays.
 
-* __2. Promote the benefits of annual membership for weekend riders__: 
+* __Promote the benefits of annual membership for weekend riders__: 
 Although casual and member customers have similar number of rides during weekends, annual members have more flexibility to take longer trips without worrying about extra fees. Marketing campaigns should emphasize this benefit to encourage casual riders to become annual members.
 
-* __3. Offer incentives to encourage casual riders to use docked bikes more often__: 
+* __Offer incentives to encourage casual riders to use docked bikes more often__: 
 Since casual riders account for the majority of trips made with docked bikes, incentives such as discounts or free rides can encourage them to become more loyal customers and potentially convert to annual members.
 
-* __4. Focus marketing efforts on promoting the benefits of using bikes from different starting stations__: 
+* __Focus marketing efforts on promoting the benefits of using bikes from different starting stations__: 
 Since casual customers tend to use a specific starting station much more often, marketing campaigns should focus on the benefits of exploring different areas and using bikes from different starting stations. This can encourage casual riders to become more adventurous and potentially become annual members.
 
-* __5. Highlight the cost savings of annual memberships for frequent riders__: 
+* __Highlight the cost savings of annual memberships for frequent riders__: 
 The analysis shows that casual riders tend to use bikes for longer duration than annual members. Promoting the cost savings of an annual membership for frequent riders can encourage casual riders to become members and take advantage of the cost savings for longer trips.
 
-* __6. Offer membership trial periods__: 
+* __Offer membership trial periods__: 
 The company can offer casual riders the chance to try out the annual membership for a certain period of time (e.g. a week or a month) to see if they would benefit from the service. This can help to increase the number of annual members by giving casual riders a chance to experience the benefits of an annual membership without committing to it fully.
 
-* __7. Create a community for annual members__: 
+* __Create a community for annual members__: 
 Since annual members tend to be more frequent users of the service, the company can create a community for them to promote social interaction and encourage them to use the service more often. This can help to increase their loyalty to the service and encourage casual riders to convert to annual members.
 
 

@@ -160,6 +160,7 @@ df_to_export <-
   group_by(member_casual) %>% 
   summarise(avg_ride_length = mean(ride_length),
             median_ride_length = median(ride_length),
+            third_quantile = quantile(ride_length, 0.75),
             min_ride_length = min(ride_length),
             max_ride_length = max(ride_length)
             )
@@ -169,7 +170,7 @@ df_to_export_name = "basics_stats_of_ride_length__members_vs_casual_customers.cs
 # write.csv(df_to_export, file.path('outputs', 'data', df_to_export_name) , row.names = FALSE)
 print("Data exported.")
 ```
-Comment: The descriptive statistics for ride lengths in our dataset are presented in the table above, broken down by membership type: casual and member. The average ride time for casual riders was 40.03 minutes, which is more than double the average ride length for members, which was 15.35 minutes. However, it's worth noting that the average ride time for casual riders was just 21 minutes, while it was 11 minutes for members. This implies that, while the dataset contains some very lengthy casual rides, the vast majority of trips are far shorter. 
+Comment: The descriptive statistics for ride lengths in our dataset are presented in the table above, broken down by membership type: casual and member. The average ride time for casual riders was 40.03 minutes, which is more than double the average ride length for members, which was 15.35 minutes. However, it's worth noting that the median ride time for casual riders was just 21 minutes, while it was 11 minutes for members. This implies that, while the dataset contains some very lengthy casual rides, the vast majority of trips are far shorter. 
 The longest ride length for casual bikers was 238,940 minutes, which is more than 165 days! The longest ride length for members was 225,960 minutes, which is also a very long time. The minimum riding time for both groups was 5 minutes, indicating that some rides may have been cut short for various reasons. Overall, these statistics indicate that our dataset has a wide variety of ride lengths, with some being quite short and others being exceedingly long. These information might help uncover trends and patterns in ride length, which could help drive decision-making in areas like route design and pricing strategies.
 
 ### Visualize: Compare casual vs member' ride_length in Boxplots
@@ -199,7 +200,7 @@ df %>% filter(ride_length >= lower_bound & ride_length <= upper_bound) %>%
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
         plot.caption = element_text(hjust = 0, size = caption_size)) + 
   scale_fill_manual(values = casual_member_colors)
-  
+
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'box_plots__ride_duration_by_customer_type.png')

@@ -3,17 +3,14 @@
 #author: "bationoA"
 #date: "2023-04-08"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
   fig_caption: yes
 ---
 
-```{r}
-sessionInfo()
-```
-
-
 # Case Study: How does a bike-share navigate speedy success?
+![Image by <a href="https://www.freepik.com/free-photo/full-shot-colleagues-going-work-bicycle_26923211.htm#query=bikecycle&position=27&from_view=search&track=robertav1_2_sidr">Freepik</a>](resources/img/full-shot-colleagues-going-work-bicycle.jpg)
+
 In this case study we will work for a fictional company, Cyclistic, a bike-share company in Chicago. For the director of marketing of the company’s, future success depends on maximizing the number of annual memberships. Therefore, rather than creating a marketing campaign that targets all-new customers, the director of marketing believes there is a very good chance to convert casual riders into members. 
 
 Source: [Link](https://d3c33hcgiwev3.cloudfront.net/aacF81H_TsWnBfNR_x7FIg_36299b28fa0c4a5aba836111daad12f1_DAC8-Case-Study-1.pdf?Expires=1681084800&Signature=WgKO~-LpPUMKTGb95H3tFbjTpbRvtu1nqBpjLACnTFrK6jBlggPYFa4lDd6jERYrYmrs7kP~4W~AJU4a3TgXhrp8XFq2c5L5gXwSIcBZNrDDKEeT1ZPXQzSUUGbFtvzy5iz-TyEvMJ-2ETjsA-oDex859GY-Ztjr8EitozVmK2w_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A)
@@ -102,10 +99,11 @@ knitr::include_graphics(c(file.path("outputs", "img", "bar_plots__average_number
 ```
 
 ### 5. Testing the difference of trips duration between casual and member customers
-    The difference in the duration of trips between casual and member customers 
-    is statistically significant with 99.99% confidence.
+
+    The difference in the duration of trips between casual and member customers is statistically 
+    significant with 99.99% confidence.
     
-From the above analysis it appeared that a clear difference exists between casual and member customers when it comes to the duration of their rides. In this section we'll use statistical tests to evaluate the significance of this difference. The tests will be on central trends such as means or medians.
+The analysis have shown a clear difference between casual and member customers when it comes to the duration of their rides. In this section we'll use statistical tests to evaluate the significance of this difference. The tests will be on central tendencies such as means or medians.
 
 The question we're trying to answer here is: Is there a significant difference in the duration of the trips between the two categories of customers (casual and member)? The results of different tests conducted are summarized in the bellow table.
 

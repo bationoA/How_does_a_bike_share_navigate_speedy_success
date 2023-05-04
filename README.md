@@ -4,6 +4,8 @@ output:
   pdf_document: default
 ---
 # How does a bike share navigate speedy success
+![Image by <a href="https://www.freepik.com/free-photo/full-shot-colleagues-going-work-bicycle_26923211.htm#query=bikecycle&position=27&from_view=search&track=robertav1_2_sidr">Freepik</a>](resources/img/full-shot-colleagues-going-work-bicycle.jpg)
+
 In this case study we will work for a fictional company, Cyclistic, a bike-share company in Chicago. For the director of marketing of the company’s, future success depends on maximizing the number of annual memberships. Therefore, rather than creating a marketing campaign that targets all-new customers, the director of marketing believes there is a very good chance to convert casual riders into members. 
 
 Source: [Link](https://d3c33hcgiwev3.cloudfront.net/aacF81H_TsWnBfNR_x7FIg_36299b28fa0c4a5aba836111daad12f1_DAC8-Case-Study-1.pdf?Expires=1681084800&Signature=WgKO~-LpPUMKTGb95H3tFbjTpbRvtu1nqBpjLACnTFrK6jBlggPYFa4lDd6jERYrYmrs7kP~4W~AJU4a3TgXhrp8XFq2c5L5gXwSIcBZNrDDKEeT1ZPXQzSUUGbFtvzy5iz-TyEvMJ-2ETjsA-oDex859GY-Ztjr8EitozVmK2w_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A)

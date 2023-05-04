@@ -389,7 +389,7 @@ tests_table
 ```
 
 
-# See ridership data by type (members vs casual users) and week day
+# Ridership data by type (members vs casual users) and week day
 
 ```{r}
 df_to_export <- 
@@ -546,7 +546,7 @@ ggsave(file_name,
        height=img_height)
 ```
 
-# See ridership data by type (members vs casual users) and months
+# Ridership data by type (members vs casual users) and months
 ```{r}
 df_to_export <- 
   df %>%
@@ -693,7 +693,7 @@ ggsave(file_name,
 ```
 
 
-# See ridership data by type (members vs casual users) and years
+# Ridership data by type (members vs casual users) and years
 ```{r}
 df_to_export <- 
   df %>%
@@ -863,7 +863,7 @@ ggsave(file_name,
 ```
 
 
-# See ridership data by type (members vs casual users) and ride_length_cat
+# Ridership data by type (members vs casual users) and ride_length_cat
 ```{r}
 df_to_export <- 
   df %>%
@@ -898,7 +898,7 @@ df %>%
   scale_fill_manual(values = casual_member_colors)
 ```
 
-# See ridership data by type (members vs casual users) and top 5 start_station
+# Ridership data by type (members vs casual users) and top 5 start_station
 ```{r}
 df_to_export <- 
   df %>%
@@ -917,6 +917,10 @@ print("Data exported.")
 
 ### Visualize for number_of_rides
 ```{r}
+# function to break labels of x-axis into a new line at each '&' character in start_station_name
+addline_format <- function(x,...){
+    gsub('&','& \n',x)
+}
 df %>%
   group_by(member_casual, start_station_name) %>%
   summarise(number_of_rides = n()) %>%
@@ -937,11 +941,14 @@ df %>%
         plot.subtitle = element_text(hjust = 0, size = subtitle_size),
         plot.caption = element_text(hjust = 0, size = caption_size),
         axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  scale_fill_manual(values = casual_member_colors)
+  scale_fill_manual(values = casual_member_colors) + 
+  scale_x_discrete(breaks=unique(df$start_station_name), 
+    labels=addline_format(unique(df$start_station_name)))
+
 
 # Save the plot as png image
 file_name = file.path('outputs', 'img', 'bar_chart__number_of_rides_per_customer_by_top_5_start_station.png')
-## ggsave save the last image produced
+# ggsave save the last image produced
 ggsave(file_name,
        width=img_width,
        height=img_height)
@@ -975,7 +982,7 @@ df %>%
 ```
 Comment: There is a clear difference between casual and member customers in terms of starting station.
 
-# See ridership data by type (members vs casual users) and top 5 end_station
+# Ridership data by type (members vs casual users) and top 5 end_station
 There are missing values for end_station_name, we filter them out. (In real life we would have investigate them in order to fix the issue)
 ```{r}
 df_to_export <- 
@@ -1029,7 +1036,7 @@ ggsave(file_name,
 ```
 Comment: 
 
-# See ridership data by type (members vs casual users) and bikes type (number_of_rides)
+# Ridership data by type (members vs casual users) and bikes type (number_of_rides)
 ```{r}
 df %>% 
   filter(nchar(rideable_type) > 7) %>%
@@ -1126,7 +1133,7 @@ df %>%
 Comment: 
 
 
-# See ridership data by type (members vs casual users) and bikes type (rides_length)
+# Ridership data by type (members vs casual users) and bikes type (rides_length)
 ```{r}
 df_to_export <- 
   df %>%
